@@ -74,13 +74,72 @@ public:
     }
 };
 
+class Entrenador {
+    private:
+    vector<Pokemon> misPokemones[5];
+    int nivel;
+    string nombre, rango;
+    public: 
+    Entrenador(string nombre, int nivel, string rango) {
+        _nombre = nombre;
+        _nivel = nivel;
+        _rango = rango;
+    };
+    string getNombre()const {return nombre;}
+    string getRango()const {return rango;}
+    int getNivel()const {return nivel;}
+    void setNombre(string nombre) {_nombre = nombre;}
+    void setRango(string rango) {_rango = rango;}
+    void setNivel(int nivel) {_nivel = nivel;}
+
+    void ascenderRango() {
+        if (nivel>=10){
+            setRango("Novato");
+        } 
+        else if (nivel>=20) {
+            setRango("Experimentado");
+        } else if (nivel>=50) {
+            setRango("Líder de Gimnasio");
+        } else if (nivel>=60) {
+            setRango("Maestro");
+        }
+        else if (nivel>=80) {
+            setRango("Gran Maestro");
+        }
+    }
+    void entrenar(Pokemon &miPok, int nivel, Pokemon &oponente) {
+        int xpGanado;
+        miPok.setXp(miPok.getXp()+ oponente.getNivel*getNivel());
+        cout << "El entrenador " << getNombre() <<" ha entrenado a " << miPok.getNombre() << endl;
+        if(miPok.verificarAumentoNivel()) {
+        string nombre, color;
+        //Cambiar mensajes
+        cout << "Enhorabuena, haz subido de nivel!!\nPuedes cambiar el nombre y color de tu Pokemon. Además la potencia de ataque se aumentó un 20%\n";
+        cout << "Nuevo nombre:\n";
+        cin >> nombre;
+        cout << "Nuevo color:\n";
+        cin >> color;
+        miPok.aumentarNivel();
+        miPok.evolucionar(nombre,color);
+        aumentarNivel();
+    }
+
+    void aumentarNivel() {
+        setNivel(getNivel()+ 5);
+    }
+    
+
+    
+}
+
 class Batalla {
     private:
     int numeroDeBatallas;
     
 
     public:
-    void luchar(Pokemon &miPok, Pokemon &oponente) {
+    //Este metodo recibe entrenadores para utilizar sus pokemones para la batalla
+    void luchar(Entrenador &yo, Pokemon &oponente) {
     int vidaOponente, vidaMiPok, ataqueMiPok, ataqueOponente, nivelMipok, nivelOponente, xpMiPok, xpOponente, ronda = 1;
     bool ganador = true; // true para mi pokemon, false si no
     string sig;
@@ -130,22 +189,8 @@ class Batalla {
     }
 
     if (ganador) {
-        int xpGanado;
-        xpGanado = 50 + oponente.getNivel()*ronda;
-        xpMiPok = miPok.getXp() + xpGanado;
-        miPok.setXp(xpMiPok);
-        cout << "¡Hemos ganado, felicidades! \nHaz aumentado el xp  de " << miPok.getNombre() << ": +" << xpGanado << endl;
-
-        if(miPok.verificarAumentoNivel()) {
-        string nombre, color;
-        cout << "Enhorabuena, haz subido de nivel!!\nPuedes cambiar el nombre y color de tu Pokemon. Además la potencia de ataque se aumentó un 20%\n";
-        cout << "Nuevo nombre:\n";
-        cin >> nombre;
-        cout << "Nuevo color:\n";
-        cin >> color;
-        miPok.aumentarNivel();
-        miPok.evolucionar(nombre,color);
-        }
+        //El entrenador de mi pok
+        entrenador.entrenar();
     } else {
         int xpGanado;
         xpGanado = 40 + miPok.getNivel()*ronda;
@@ -181,7 +226,9 @@ int main() {
     vector<Pokemon> contrincantes;
     contrincantes.push_back(Pokemon("Wartortle", "Azul",5,100,0,1));
     contrincantes.push_back(Pokemon("Arbok", "Violeta",15,100,0,2));
-    contrincantes.push_back(Pokemon("Charizartl", "Naranja",25,100,0,3)); 
+    contrincantes.push_back(Pokemon("Charizartl", "Naranja",25,100,0,3));
+
+
 
     
     do {
