@@ -13,7 +13,7 @@ private:
     int xp;
     int nivel;
     string ataqueEspecial; //Antes estaba como bool(para verificar el modo), aunque esa logica la podriamos
-    //manehjar en el sistema de batalla con un random, para que segun cierta probabilidad lanza el ataque 
+    //manehjar en el sistema de batalla con un random, para que segun cierta probabilidad lanza el ataque
     //especial y muestre en pantalla que tal pokemon ha lanzado el ataque tal, lo que podría ser más interesante
 
 public:
@@ -68,8 +68,8 @@ public:
         }
         mostrarDatos();
     }
-    bool inline verificarAumentoNivel() {       
-        return xp > nivel*100;        
+    bool inline verificarAumentoNivel() {
+        return xp > nivel*100;
     }
 
     void inline aumentarNivel() {
@@ -79,14 +79,34 @@ public:
     void inline mostrarDatos() {
         cout << nombre << " Color: " << color << " || Nivel de Vida: " << vida << " || Potencia de Ataque: " << ataque << " || Xp: " << xp << " || Nivel: " << nivel <<endl;
     }
+
+    //sobrecarga del + para crear pokemon recargado
+    Pokemon  operator + (const Pokemon & c) const {
+        //creamos un objeto nuevo de la clase cargo llamado "pokemonrecargado" e instantaneamente en sus parametros
+        //sumamos los atributos de otros objetos para agregarlos en los atributos de "pokemonrecargado"
+        //y luego se retorna el objeto
+        Pokemon pokemonrecargado (" SuperPokemon! "," multicolor! ",ataque+c.ataque,vida+c.vida, xp+c.xp,nivel+c.nivel,"Vacio infinito!" );
+
+        return pokemonrecargado;
+
+    }
+    
+    friend ostream& operator << (ostream &o,Pokemon c);         
 };
+ostream& operator << (ostream &o,Pokemon p){
+    return o<<"\nNombre: "<<p.getNombre()<<
+    " \n color: "<<p.getColor()<<"\n ataque: "<<p.getAtaque()<<"\n vida "<<p.getVida()<<
+    " \n experiencia: "<<p.getXp()<<"\n nivel: "<<p.getNivel()<<"\n ataque especial: "<<
+    p.getAtaqueEspecial()<<endl;
+
+}  
 
 class Entrenador {
-    private:
+private:
     vector<Pokemon> misPokemones; //aunque debe ser 3, eso se maneja en la excepci+on
     string nombre;
     int nivel;
-    public:
+public:
     Entrenador(): nombre(""), nivel(1) {}
     string getNombre()const {return nombre;}
     int getNivel()const {return nivel;}
@@ -94,7 +114,7 @@ class Entrenador {
     void setNivel(int nivel) {this->nivel = nivel;}
     //IMPORTANTE
     //aqui se devuelve un valor por referencia, si no colocan el & no sirve
-    Pokemon &getPokemon(int i) { 
+    Pokemon &getPokemon(int i) {
         return misPokemones[i];
     }
 
@@ -102,7 +122,7 @@ class Entrenador {
     void agregarpokemon(Pokemon &poke){
         misPokemones.push_back(poke);
     }
- 
+
     void entrenar(Pokemon &miPok, const Pokemon &oponente) {
         int xpGanado;
         miPok.setXp(miPok.getXp()+ oponente.getNivel()*nivel);
@@ -126,66 +146,79 @@ class Entrenador {
     }
 
     //Se hace sobrecarga del operador cout para mostrar info
-    
+    friend ostream& operator << (ostream &o,Entrenador c);
 };
+//sobrecarga del operador << para mostrar informacion de entrenadores
+ostream& operator << (ostream &o,Entrenador c){
 
+    o<<"Nombre del entrenador: "<<c.nombre<< " / Nivel del entrenador: "<<c.nivel;
+
+    for(int i=0;i<c.misPokemones.size();i++){
+        //pasé el return de antes del o para ponerlo afuera
+        //sirve, pero toca que los juanes califiquen
+        o<<"\n---- Pokemon "<<i+1<<"----"<<c.misPokemones[i] <<endl;
+
+    }
+    return o;
+
+}
 
 class Batalla {
-    private:
+private:
     int numeroDeBatalla;
-    
 
-    public:
+
+public:
     //Este metodo recibe entrenadores para utilizar sus pokemones para la batalla
     Batalla(): numeroDeBatalla(0) {}
     void luchar(Pokemon &miPok, Pokemon &oponente, bool &ganador) {
-    int vidaOponente, vidaMiPok, ataqueMiPok, ataqueOponente, nivelMipok, nivelOponente, xpMiPok, xpOponente, ronda = 1;
-    char sig;
-    
-    vidaOponente = oponente.getVida();
-    vidaMiPok = miPok.getVida();
-    ataqueMiPok = miPok.getAtaque();
-    ataqueOponente = oponente.getAtaque();
-    nivelMipok = miPok.getNivel();
-    nivelOponente = oponente.getNivel();
-    system("cls");
-    cout << "\n\n\n QUE COMIENCE LA PELEA!\n ";
-    miPok.mostrarDatos();
-    cout << "\n          vs          \n";
-    oponente.mostrarDatos();
-    cout << "\n\n***********\n\n";
-    
-    while (vidaOponente > 0 && vidaMiPok > 0) {
-        int restOp, restMi;
+        int vidaOponente, vidaMiPok, ataqueMiPok, ataqueOponente, nivelMipok, nivelOponente, xpMiPok, xpOponente, ronda = 1;
         char sig;
-        cout << "Ronda " << ronda << endl; //Inicia ronda
-        vidaMiPok -= ataqueOponente; //Ataque  y resta vida a miPok(pok1)
-        miPok.setVida(vidaMiPok); //Verifica si sigue vivo
-        if (vidaMiPok <= 0) {
-            vidaMiPok = 0;
-            ganador = false; //Establece ganador
-            break;
-        }
-        vidaOponente -= ataqueMiPok; //Otro pokemon recibe daño
-        oponente.setVida(vidaOponente);
-        if (vidaOponente <= 0) { //Verifica si el otro sigue vivo
-            vidaOponente = 0;
-            break; //Rompe la lucha
-        }
 
-        cout << miPok.getNombre() << ": Vida: " << vidaMiPok << endl;
-        cout << oponente.getNombre() << ": Vida: " << vidaOponente << endl;
-         cout << "\n\n" <<"*********" << "\n\n";
-        do {
-            cout << "Presiona X para continuar" << endl;
-            cin >> sig;
-        } while (sig != 'x' && sig != 'X');
-       
-        ronda++;
-    }    
-    miPok.sanar();
-    oponente.sanar();        
-}
+        vidaOponente = oponente.getVida();
+        vidaMiPok = miPok.getVida();
+        ataqueMiPok = miPok.getAtaque();
+        ataqueOponente = oponente.getAtaque();
+        nivelMipok = miPok.getNivel();
+        nivelOponente = oponente.getNivel();
+        system("cls");
+        cout << "\n\n\n QUE COMIENCE LA PELEA!\n ";
+        miPok.mostrarDatos();
+        cout << "\n          vs          \n";
+        oponente.mostrarDatos();
+        cout << "\n\n***********\n\n";
+
+        while (vidaOponente > 0 && vidaMiPok > 0) {
+            int restOp, restMi;
+            char sig;
+            cout << "Ronda " << ronda << endl; //Inicia ronda
+            vidaMiPok -= ataqueOponente; //Ataque  y resta vida a miPok(pok1)
+            miPok.setVida(vidaMiPok); //Verifica si sigue vivo
+            if (vidaMiPok <= 0) {
+                vidaMiPok = 0;
+                ganador = false; //Establece ganador
+                break;
+            }
+            vidaOponente -= ataqueMiPok; //Otro pokemon recibe daño
+            oponente.setVida(vidaOponente);
+            if (vidaOponente <= 0) { //Verifica si el otro sigue vivo
+                vidaOponente = 0;
+                break; //Rompe la lucha
+            }
+
+            cout << miPok.getNombre() << ": Vida: " << vidaMiPok << endl;
+            cout << oponente.getNombre() << ": Vida: " << vidaOponente << endl;
+            cout << "\n\n" <<"*********" << "\n\n";
+            do {
+                cout << "Presiona X para continuar" << endl;
+                cin >> sig;
+            } while (sig != 'x' && sig != 'X');
+
+            ronda++;
+        }
+        miPok.sanar();
+        oponente.sanar();
+    }
 
 };
 
@@ -202,12 +235,12 @@ void lucharEntrenadores(Entrenador &rude1, Entrenador &rude2) {
 
     //Si quieren, hagan un for y remplazen el 0 por 1.
     epicGame.luchar(rude1.getPokemon(0), rude2.getPokemon(0), ganador); //Revisar método getPokemon de la clase Entrenador
-  
-    
+
+
     if (ganador) {
         rude1.entrenar(rude1.getPokemon(0), rude2.getPokemon(0));
     } else {
-        rude2.entrenar(rude2.getPokemon(0), rude1.getPokemon(0));        
+        rude2.entrenar(rude2.getPokemon(0), rude1.getPokemon(0));
     } //Ni se les ocurra agregar otra condicion o else, aqui no les genera aun lo que queremos,
     //pero es porque toca agragar una aleatoriedad (random en el daño) para que gane solo uno
 
@@ -234,7 +267,7 @@ int main() {
 
         for (int i = 0; i < 3; ++i) {
             if(i>0) //este if solo ejecuta como verdadero la siguiente línea. Es un if de tipo parchado
-            system("cls");
+                system("cls");
             Pokemon poki;
             string nombrePok, colorPok, ataqueEspecial;
 
@@ -257,12 +290,84 @@ int main() {
         cout << "Deseas agregar otro entrenador? (Si/no)" << endl;
         cin >> cond;
     }
-    
+
     system("cls");
+    cout<<"Entrenadores disponibles: "<<endl;
     for(int i=0; i<entrenadores.size(); i++) {
-        cout << "Entrenador " << i +1 << endl;
-        cout << entrenadores[i].getNombre() << endl;
+        cout << "1) " << entrenadores[i].getNombre() << endl;
     }
+
+    //mostrar mediante sobrecarga del cout, la informacion de entrenadores
+    //iria en la opcion de mostrar info de entrenadores del menu
+    //esto es testeo, se acomodarátodo en el menú
+    int open=0;
+    cout<<"Ver info de entrenadores? 1.si 2.no"<<endl;
+    cin>>open;
+
+    if(open==1){
+        cout<<"Que entrenador desea analizar? "<<endl;
+        cout<<"Entrenadores disponibles: "<<endl;
+
+        for(int i=0; i<entrenadores.size(); i++) {
+            cout <<"1) "<< entrenadores[i].getNombre() << endl;
+        }
+        int openanalizar;
+        cin>>openanalizar;
+        //excepcion que suelte error si escoge algo distinto a 1 2 o 3
+        if(openanalizar==1 || openanalizar==2 || openanalizar==3){
+            cout<<entrenadores[openanalizar-1]<<endl;
+        }
+    }else{
+        cout<<"siguiendo normalmente con el programa (señor usuario, ignore este mensaje)"<<endl;
+    }
+//hasta la linea 325 llega la opcion "analizar entrenadores" del menú que haremos
+
+
+
+
+
+//generar un pokemon recargado mediante la sobrecarga del + que está en la clase pokemon
+    int opcion=0;
+    cout<<"imagino que deseas recargar dos pokemones... cierto? 1) si, 2) no"<<endl;
+
+    cin>>opcion;
+
+    if(opcion==1){
+        cout<<"primero elige el entrenador para asi acceder a sus pokemones"<<endl;
+
+        for(int i=0; i<entrenadores.size(); i++) {
+            cout <<"1) "<< entrenadores[i].getNombre() << endl;
+        }
+        int pepitoperez=0;
+        cout<<"que entrenador escoges:"<<endl;
+
+        cin>>pepitoperez;
+        cout<<"a continuacion te muestro la hoja de vida del entrenador: "<<endl;
+        cout<<entrenadores[pepitoperez-1]<<endl;
+        cout<<endl;
+        int pac1=0;
+        cout<<"elige el primer pokemon a combinar"<<endl;
+
+        cin>>pac1;
+
+        int pac2=0;
+        cout<<"elige el segundo"<<endl;
+
+        cin>>pac2;
+        //aplicacion de la sobrecarga del operador + (creando el pokemon recargado)
+        cout<<"se esta creando el pokemon..."<<endl;
+        Pokemon pokemonrecargado=entrenadores[pepitoperez-1].getPokemon(pac1-1)+entrenadores[pepitoperez-1].getPokemon(pac2-1);
+        cout<<"Pokemon recargado creado!! datos a continuacion: "<<endl;
+        cout << pokemonrecargado;
+    }else{
+        cout<<"okey..siguiendo con el programa"<<endl;
+    }
+
+
+
+
+
+
 
     //Aquí hacer un menú para opciones como:
     //1)Combatir dos entrenadores modo campal (idea de santiago)
@@ -271,17 +376,16 @@ int main() {
 
     //IMPORTANTE
     //Yo solo voy a hacer la opcion uno. Ustedes hagan el resto y configuren lo siguiente para que quede dentro del menu
-    cout << "Selecciona dos entrenadores";
-    cout << "Entrenador 1: ";
-    cin >> pro1;
-    cout << "Entrenador 2";
-    cin >> pro2;
-    pro1;
-    pro2;
+    //pongo en comentarios para que no me moleste
 
+    /* cout << "Selecciona dos entrenadores "<<endl;
+    cout << "Entrenador 1: "<<endl;
+    cin >> pro1;
+    cout << "Entrenador 2"<<endl;
+    cin >> pro2; */
 
     lucharEntrenadores(entrenadores[pro1-1],entrenadores[pro2-1]);
 
 
-    return 0;    
+    return 0;
 }
