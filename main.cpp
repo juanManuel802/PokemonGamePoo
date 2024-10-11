@@ -157,7 +157,6 @@ ostream& operator << (ostream &o,Entrenador c){
         //pasé el return de antes del o para ponerlo afuera
         //sirve, pero toca que los juanes califiquen
         o<<"\n---- Pokemon "<<i+1<<"----"<<c.misPokemones[i] <<endl;
-
     }
     return o;
 
@@ -166,11 +165,12 @@ ostream& operator << (ostream &o,Entrenador c){
 class Batalla {
 private:
     int numeroDeBatalla;
+    int registroDaño;
 
 
 public:
     //Este metodo recibe entrenadores para utilizar sus pokemones para la batalla
-    Batalla(): numeroDeBatalla(0) {}
+    Batalla(): numeroDeBatalla(0), registroDaño(0) {}
     void luchar(Pokemon &miPok, Pokemon &oponente, bool &ganador) {
         int vidaOponente, vidaMiPok, ataqueMiPok, ataqueOponente, nivelMipok, nivelOponente, xpMiPok, xpOponente, ronda = 1;
         char sig;
@@ -220,10 +220,13 @@ public:
         oponente.sanar();
     }
 
+    friend ostream& operator << (ostream &o,Batalla b);
 };
+ostream& operator << (ostream &o, Batalla c){
+    return o<<"";
+}
 
-
-void lucharEntrenadores(Entrenador &rude1, Entrenador &rude2) {
+Batalla lucharEntrenadores(Entrenador &rude1, Entrenador &rude2) {
     Batalla epicGame;
     bool ganador;
     //ACLARACION:
@@ -241,9 +244,9 @@ void lucharEntrenadores(Entrenador &rude1, Entrenador &rude2) {
         rude1.entrenar(rude1.getPokemon(0), rude2.getPokemon(0));
     } else {
         rude2.entrenar(rude2.getPokemon(0), rude1.getPokemon(0));
-    } //Ni se les ocurra agregar otra condicion o else, aqui no les genera aun lo que queremos,
+    }
     //pero es porque toca agragar una aleatoriedad (random en el daño) para que gane solo uno
-
+    return epicGame;
 }
 
 
@@ -290,7 +293,7 @@ int main() {
         cout << "Deseas agregar otro entrenador? (Si/no)" << endl;
         cin >> cond;
     }
-
+    cond = "";
     system("cls");
     cout<<"Entrenadores disponibles: "<<endl;
     for(int i=0; i<entrenadores.size(); i++) {
@@ -364,9 +367,18 @@ int main() {
     }
 
 
+    do {
+        Batalla game;
+        cout << "Selecciona dos entrenadores "<<endl;
+        cout << "Entrenador 1: "<<endl;
+        cin >> pro1;
+        cout << "Entrenador 2"<<endl;
+        cin >> pro2; 
 
+        game = lucharEntrenadores(entrenadores[pro1-1],entrenadores[pro2-1]);
 
-
+        batallas.push_back(game);
+    } while(cond=="si");
 
 
     //Aquí hacer un menú para opciones como:
@@ -378,13 +390,8 @@ int main() {
     //Yo solo voy a hacer la opcion uno. Ustedes hagan el resto y configuren lo siguiente para que quede dentro del menu
     //pongo en comentarios para que no me moleste
 
-    /* cout << "Selecciona dos entrenadores "<<endl;
-    cout << "Entrenador 1: "<<endl;
-    cin >> pro1;
-    cout << "Entrenador 2"<<endl;
-    cin >> pro2; */
+    
 
-    lucharEntrenadores(entrenadores[pro1-1],entrenadores[pro2-1]);
 
 
     return 0;
