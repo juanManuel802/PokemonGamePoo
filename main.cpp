@@ -68,6 +68,9 @@ public:
             vida = 100;
         }
     }
+    void mostrarDatos() {
+        cout << "this" << endl; //?
+    }
 
     void evolucionar(string nombre, string color)
     {
@@ -93,11 +96,6 @@ public:
     void aumentarNivel()
     {
         nivel++;
-    }
-
-    void mostrarDatos()
-    {
-        cout << nombre << " Color: " << color << " || Nivel de Vida: " << vida << " || Potencia de Ataque: " << ataque << " || Xp: " << xp << " || Nivel: " << nivel << endl;
     }
 
     // sobrecarga del + para crear pokemon recargado
@@ -262,6 +260,7 @@ public:
             bool cond;
             do {
                 try {
+
                     cout << "Ataca!!" << endl;
                     cin >> tipoAtaque;
                     if (tipoAtaque == 'x') {
@@ -306,7 +305,7 @@ ostream &operator<<(ostream &o, Batalla c) {
              << "Daño en total que se hicieron los Pokemones: " << c.getRegistroDaño() << "\n"
              << "Ganador Combate 1:" << c.getGanadoresCombatesPok(0) << "\n"
              << "Ganador Combate 2:" << c.getGanadoresCombatesPok(1) << "\n"
-             << "Ganador Combate 3:" << c.getGanadoresCombatesPok(3) << "\n"
+             << "Ganador Combate 3:" << c.getGanadoresCombatesPok(2) << "\n"
              << "\nEntrenador Ganador: " << c.getGanador() << endl;
 }
 
@@ -334,9 +333,10 @@ int main()
         cout << "7) Historial" << endl;
         cin >> op;
 
-        switch (op)
+       switch (op)
         {
         case 1:
+        system("cls");
             cout << "Crea los entrenadores: " << endl;
             while (cond == "Si" || cond == "si")
             {
@@ -389,10 +389,7 @@ int main()
             }
             break;
         case 2:
-            if(entrenadores.size()<2) {
-                cout << "Primero crea entrenadores para que luchen" << endl;
-                break;
-            }
+        system("cls");
             do
             {
                 Batalla game;
@@ -400,43 +397,50 @@ int main()
                 cin >> pro1;
                 cout << "Selecciona tu adversario" << endl;
                 cin >> pro2;
+                    
+                if(pro1!=pro2) {
+                    game = lucharEntrenadores(entrenadores[pro1 - 1], entrenadores[pro2 - 1]);
 
-                game = lucharEntrenadores(entrenadores[pro1 - 1], entrenadores[pro2 - 1]);
-
-                batallas.push_back(game);
+                    batallas.push_back(game);
+                } else {
+                    cout << "Elegiste al mismo, ahora no haces nada :(" << endl;
+                }
                 cout << "Quieres volvera jugar? " << endl;
                 cin >> cond;
                 // Agregar excepcion aquí por si el usuario ingresa un valor que no sea si o no
             } while (cond == "si");
             break;
         case 3:
-            if(entrenadores.size()==0){
-                cout<<"Primero crea un entrenador!!"<<endl;
-                break;
-            }
-            cout << "Que entrenador desea analizar? " << endl;
-            cout << "Entrenadores disponibles: " << endl;
-
-            for (int i = 0; i < entrenadores.size(); i++)
-            {
-                cout << i + 1 << ") " << entrenadores[i].getNombre() << endl;
-            }
-            int openanalizar;
-            cin >> openanalizar;
-            
-            if (openanalizar == 1 || openanalizar == 2 || openanalizar == 3)
-            {
-                cout << entrenadores[openanalizar - 1] << endl;
-            }
-            
-            break;
-
-        case 4:
-            cout << "imagino que deseas recargar dos pokemones... cierto? 1) si, 2) no" << endl;
-
+        system("cls");
+            cout << "Ver info de entrenadores? 1.si 2.no" << endl;
             cin >> opcion;
 
             if (opcion == 1)
+            {
+                cout << "Que entrenador desea analizar? " << endl;
+                cout << "Entrenadores disponibles: " << endl;
+
+                for (int i = 0; i < entrenadores.size(); i++)
+                {
+                    cout << i + 1 << ") " << entrenadores[i].getNombre() << endl;
+                }
+                int openanalizar;
+                cin >> openanalizar;
+                // excepcion que suelte error si escoge algo distinto a 1 2 o 3
+                if (openanalizar == 1 || openanalizar == 2 || openanalizar == 3)
+                {
+                    cout << entrenadores[openanalizar - 1] << endl;
+                }
+            }
+            else
+            {
+                cout << "siguiendo normalmente con el programa (señor usuario, ignore este mensaje)" << endl;
+            }
+            // hasta la linea 325 llega la opcion "analizar entrenadores" del menú que haremos
+            break;
+
+        case 4:
+        system("cls");
             {
                 cout << "primero elige el entrenador para asi acceder a sus pokemones" << endl;
 
@@ -466,13 +470,10 @@ int main()
                 cout << "Pokemon recargado creado!! datos a continuacion: " << endl;
                 cout << pokemonrecargado;
             }
-            else
-            {
-                cout << "okey..siguiendo con el programa" << endl;
-            }
-
+            
             break;
         case 6:
+        system("cls");
             cout << "Deseas comparar dos entrenadores? o dos pokemones? 1)entrenadores 2)pokemones " << endl;
             cin >> eop;
             if (eop == 1)
@@ -583,6 +584,7 @@ int main()
             }
             break;
         case 7:
+        system("cls");
             for (int i = 0; i < batallas.size(); i++)
             {
                 cout << "Batalla " << i + 1 << endl;
@@ -593,8 +595,7 @@ int main()
             cout << "Opcion incorrecta, escoja otra" << endl;
             break;
         }
-
-        cout << "Deseas seguir en el programa? (si/no)" << endl;
+        cout << "Deseas seguir en el juego!? (si/no)" << endl;
         cin >> cond;
     } while (cond == "si" || cond == "Si");
 
@@ -611,19 +612,19 @@ Batalla lucharEntrenadores(Entrenador &rude1, Entrenador &rude2){
 
     for (int i = 0; i < 3; i++)
     {
-        system("cls");
         cout << "Combate " << i + 1 << endl;
+        cout << rude1.getNombre() << ": " << puntajeRude1 << "|| " << rude2.getNombre() << ": " << puntajeRude2 << endl;
         epicGame.luchar(rude1.getPokemon(i), rude2.getPokemon(i), ganador); // Revisar método getPokemon de la clase Entrenador
         if (ganador)
         {
+            cout << "Tu pokemon " << rude1.getPokemon(i).getNombre() << " ha ganado!!" << endl;
             rude1.entrenar(rude1.getPokemon(i), rude2.getPokemon(i));
             epicGame.agregarPokGanador(rude1.getPokemon(i));
-            puntajeRude1++;
-
-            
+            puntajeRude1++;            
         }
         else
         {
+            cout << rude2.getPokemon(i).getNombre() << "te ha vencido, y se ha vuelto más fuerte" <<endl;
             rude2.entrenar(rude2.getPokemon(i), rude1.getPokemon(i));
             epicGame.agregarPokGanador(rude2.getPokemon(i));
             puntajeRude2++;
