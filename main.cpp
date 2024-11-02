@@ -49,7 +49,7 @@ public:
 
     void setNombre(string nombre) { this->nombre = nombre; }
     void setColor(string color) { this->color = color; }
-    void setAtaque(int ataque) { this->ataque = ataque; }
+    void setPotenciaDeAtaque(int ataque) { this->ataque = ataque; }
     void setVida(int vida) { this->vida = vida; }
     void setXp(int xp) { this->xp = xp; }
     void setNivel(int nivel) { this->nivel = nivel; }
@@ -58,7 +58,6 @@ public:
     void saludar()
     {
         cout << "¡Hola!, soy " << nombre << ", estoy a tu disposición." << endl;
-        mostrarDatos();
     }
 
     void sanar()
@@ -69,7 +68,7 @@ public:
         }
     }
     void mostrarDatos() {
-        cout << "this" << endl; //?
+        cout << "\nNombre: " << getNombre() << " \n color: " << getColor() << "\n ataque: " << getAtaque() << "\n vida " << getVida() << " \n experiencia: " << getXp() << "\n nivel: " << getNivel() << "\n ataque especial: " << getAtaqueEspecial() << endl;
     }
 
     void evolucionar(string nombre, string color)
@@ -99,12 +98,11 @@ public:
     }
 
     // sobrecarga del + para crear pokemon recargado
-    Pokemon operator+(const Pokemon &c) const
-    {
+    Pokemon* operator+(const Pokemon *c) const {
         // creamos un objeto nuevo de la clase cargo llamado "pokemonrecargado" e instantaneamente en sus parametros
         // sumamos los atributos de otros objetos para agregarlos en los atributos de "pokemonrecargado"
         // y luego se retorna el objeto
-        Pokemon pokemonrecargado(" SuperPokemon! ", " multicolor! ", ataque + c.ataque, vida + c.vida, xp + c.xp, nivel + c.nivel, "Vacio infinito!");
+        Pokemon *pokemonrecargado = new Pokemon(" SuperPokemon! ", " multicolor! ", ataque + c->ataque, vida + c->vida, xp + c->xp, nivel + c->nivel, "Vacio infinito!");
 
         return pokemonrecargado;
     }
@@ -117,16 +115,16 @@ public:
                 nivel == p.nivel &&
                 ataqueEspecial == p.ataqueEspecial);
     }
-    friend ostream &operator<<(ostream &o, Pokemon p);
+    friend ostream &operator<<(ostream &o, Pokemon *p);
 };
-ostream &operator<<(ostream &o, Pokemon p)
+ostream &operator<<(ostream &o, Pokemon *p)
 {
-    return o << "\nNombre: " << p.getNombre() << " \n color: " << p.getColor() << "\n ataque: " << p.getAtaque() << "\n vida " << p.getVida() << " \n experiencia: " << p.getXp() << "\n nivel: " << p.getNivel() << "\n ataque especial: " << p.getAtaqueEspecial() << endl;
+    return o << "\nNombre: " << p->getNombre() << " \n color: " << p->getColor() << "\n ataque: " << p->getAtaque() << "\n vida " << p->getVida() << " \n experiencia: " << p->getXp() << "\n nivel: " << p->getNivel() << "\n ataque especial: " << p->getAtaqueEspecial() << endl;
 }
 
 class Entrenador {
 private:
-    vector<Pokemon> misPokemones; // aunque debe ser 3, eso se maneja en la excepción
+    vector<Pokemon*> misPokemones; // aunque debe ser 3, eso se maneja en la excepción
     string nombre;
     int nivel;
 
@@ -138,11 +136,11 @@ public:
     void setNombre(string nombre) { this->nombre = nombre; }
     void setNivel(int nivel) { this->nivel = nivel; }
 
-    Pokemon &getPokemon(int i) {
+    Pokemon* getPokemon(int i) {
         return misPokemones[i];
     }
 
-    void agregarpokemon(Pokemon &poke) {
+    void agregarpokemon(Pokemon *poke) {
         if (misPokemones.size() < 3) {
             misPokemones.push_back(poke);
         } else {
@@ -150,10 +148,10 @@ public:
         }
     }
 
-    void entrenar(Pokemon &miPok, const Pokemon &oponente) {
-        miPok.setXp(miPok.getXp() + oponente.getNivel() * nivel);
-        cout << "El entrenador " << nombre << " ha entrenado a " << miPok.getNombre() << endl;
-        if (miPok.verificarAumentoNivel()) {
+    void entrenar(Pokemon *miPok, const Pokemon *oponente) { //X: &
+        miPok->setXp(miPok->getXp() + oponente->getNivel() * nivel);
+        cout << "El entrenador " << nombre << " ha entrenado a " << miPok->getNombre() << endl;
+        if (miPok->verificarAumentoNivel()) {
             string nombre, color;
             // Cambiar mensajes
             cout << "¡Enhorabuena, has subido de nivel!!\nPuedes cambiar el nombre y color de tu Pokémon. Además, la potencia de ataque se aumentó un 20%\n";
@@ -161,8 +159,8 @@ public:
             cin >> nombre;
             cout << "Nuevo color:\n";
             cin >> color;
-            miPok.aumentarNivel();
-            miPok.evolucionar(nombre, color);
+            miPok->aumentarNivel();
+            miPok->evolucionar(nombre, color);
             aumentarNivel();
         }
         cout << miPok;
@@ -172,21 +170,21 @@ public:
         setNivel(getNivel() + 1);
     }
     //const despues de parentesis
-    bool operator==(const Entrenador &ec) const{
-        if (nombre != ec.nombre || nivel != ec.nivel)
+    bool operator==(const Entrenador *ec) const{
+        if (nombre != ec->nombre || nivel != ec->nivel)
             return false;
-        if (misPokemones.size() != ec.misPokemones.size())
+        if (misPokemones.size() != ec->misPokemones.size())
             return false;
         for (int i = 0; i < misPokemones.size(); ++i) {
-            if (!(misPokemones[i] == ec.misPokemones[i]))
+            if (!(misPokemones[i] == ec->misPokemones[i]))
                 return false;
         }
         return true;
     }
-    friend ostream &operator<<(ostream &o, Entrenador c);
+    friend ostream &operator<<(ostream &o, Entrenador *c);
 };
-ostream &operator<<(ostream &o, Entrenador c) {
-    for (const auto &poke : c.misPokemones) {
+ostream &operator<<(ostream &o, Entrenador *c) {
+    for (const auto &poke : c->misPokemones) {
         o << poke << " ";
     }
     return o;
@@ -212,30 +210,30 @@ public:
     string getContrincante(int i) const { return contrincantes[i]; }
     string getGanadoresCombatesPok(int i) { return ganadoresCombatesPok[i]; }
 
-    void setGanador(Entrenador &en) { ganador = en.getNombre(); }
+    void setGanador(Entrenador *en) { ganador = en->getNombre(); }
     void setRegistroDaño(int registroDaño) { this->registroDaño = registroDaño; }
 
-    void agregarPokGanador(Pokemon &pok) {
-        ganadoresCombatesPok.push_back(pok.getNombre());
+    void agregarPokGanador(Pokemon *pok) {
+        ganadoresCombatesPok.push_back(pok->getNombre());
     }
 
     void agregarRondas(int rond) {
         registroRondas.push_back(rond);
     }
 
-    void luchar(Pokemon &miPok, Pokemon &oponente, bool &ganador) {
+    void luchar(Pokemon *miPok, Pokemon *oponente, bool &ganador) {
         int vidaOponente, vidaMiPok, ataqueMiPok, ataqueOponente, nivelMipok, nivelOponente, xpMiPok, xpOponente, ronda = 1, atq = 0;
         char sig;
-        vidaOponente = oponente.getVida();
-        vidaMiPok = miPok.getVida();
-        ataqueMiPok = miPok.getAtaque();
-        ataqueOponente = oponente.getAtaque();
-        nivelMipok = miPok.getNivel();
-        nivelOponente = oponente.getNivel();
+        vidaOponente = oponente->getVida();
+        vidaMiPok = miPok->getVida();
+        ataqueMiPok = miPok->getAtaque();
+        ataqueOponente = oponente->getAtaque();
+        nivelMipok = miPok->getNivel();
+        nivelOponente = oponente->getNivel();
         cout << "\n\n\n\n QUE COMIENCE LA PELEA!\n ";
-        miPok.mostrarDatos();
+        cout << miPok;
         cout << "\n          vs          \n";
-        oponente.mostrarDatos();
+        cout << oponente;
         cout << "\n\n***********\n\n";
         cout << "Presiona (x) para lanzar un ataque normal o (p) para un ataque especial." << endl;
         cout << "Solo tienes una oportunidad para lanzar el ataque especial" << endl;
@@ -250,7 +248,7 @@ public:
                 vidaMiPok -= ataqueOponente;
                 setRegistroDaño(getRegistroDaño() + ataqueOponente);
             }
-            miPok.setVida(vidaMiPok); 
+            miPok->setVida(vidaMiPok); 
             // Verifica si sigue vivo
             if (vidaMiPok <= 0) {
                 vidaMiPok = 0;
@@ -271,7 +269,7 @@ public:
                         vidaOponente -= (ataqueMiPok + ataqueMiPok * .4);
                         setRegistroDaño(getRegistroDaño() + (ataqueMiPok + ataqueMiPok * .4));
                         atq++;
-                        cout << miPok.getNombre() << " lanzó su ataque especial de " << miPok.getAtaqueEspecial() << endl;
+                        cout << miPok->getNombre() << " lanzó su ataque especial de " << miPok->getAtaqueEspecial() << endl;
                         cond = false;
                     } else if(atq != 0 && tipoAtaque == 'p') {
                         throw Epersonalizado("Error al lanzar el ataque", "Ataque especial ya usado");
@@ -285,8 +283,8 @@ public:
                     //continue;
                 }
             } while (cond);
-            cout << miPok.getNombre() << ": Vida: " << vidaMiPok << endl;
-            cout << oponente.getNombre() << ": Vida: " << vidaOponente << endl;
+            cout << miPok->getNombre() << ": Vida: " << vidaMiPok << endl;
+            cout << oponente->getNombre() << ": Vida: " << vidaOponente << endl;
             cout << "\n\n*********\n\n";
             do {
                 cout << "Presiona (n) para continuar" << endl;
@@ -294,30 +292,30 @@ public:
             } while (sig != 'n' && sig != 'N');
             ronda++;
         }
-        miPok.sanar();
-        oponente.sanar();
+        miPok->sanar();
+        oponente->sanar();
         agregarRondas(ronda);
     }
 };
 
-ostream &operator<<(ostream &o, Batalla c) {
-    return o << c.getContrincante(0) << " vs " << c.getContrincante(1) << "\n"
-             << "Daño en total que se hicieron los Pokemones: " << c.getRegistroDaño() << "\n"
-             << "Ganador Combate 1:" << c.getGanadoresCombatesPok(0) << "\n"
-             << "Ganador Combate 2:" << c.getGanadoresCombatesPok(1) << "\n"
-             << "Ganador Combate 3:" << c.getGanadoresCombatesPok(2) << "\n"
-             << "\nEntrenador Ganador: " << c.getGanador() << endl;
+ostream &operator<<(ostream &o, Batalla *c) {
+    return o << c->getContrincante(0) << " vs " << c->getContrincante(1) << "\n"
+             << "Daño en total que se hicieron los Pokemones: " << c->getRegistroDaño() << "\n"
+             << "Ganador Combate 1:" << c->getGanadoresCombatesPok(0) << "\n"
+             << "Ganador Combate 2:" << c->getGanadoresCombatesPok(1) << "\n"
+             << "Ganador Combate 3:" << c->getGanadoresCombatesPok(2) << "\n"
+             << "\nEntrenador Ganador: " << c->getGanador() << endl;
 }
 
 
-Batalla lucharEntrenadores(Entrenador &rude1, Entrenador &rude2);
+Batalla* lucharEntrenadores(Entrenador *rude1, Entrenador *rude2);
 
 int main()
 {
     string cond = "Si";
     int pro1, pro2, op, opcion = 0, eop = 0;
-    vector<Entrenador> entrenadores; // entrenadores del juego
-    vector<Batalla> batallas;
+    vector<Entrenador*> entrenadores; // entrenadores del juego
+    vector<Batalla*> batallas;
 
     do
     {
@@ -340,35 +338,43 @@ int main()
             cout << "Crea los entrenadores: " << endl;
             while (cond == "Si" || cond == "si")
             {
-                Entrenador papuN;
+                Entrenador *papuN = new Entrenador;
                 string nombre;
-                int nivel;
+                int nivel, vida, potAtaque;
 
                 cout << "Dale un nombre al entrenador: " << endl;
                 cin >> nombre;
-                papuN.setNombre(nombre);
+                papuN->setNombre(nombre);
                 cout << "Ahora crea sus tres pokemones " << endl;
                 for (int i = 0; i < 4; ++i) //este 4 es para hacer demostracion de la excepcion
                 {
                     if (i > 0) 
                         system("cls");
-                    Pokemon poki;
+                    Pokemon *poki = new Pokemon;
                     string nombrePok, colorPok, ataqueEspecial;
 
                     cout << "Nombre del Pokemon " << i + 1 << ":" << endl;
                     cin >> nombrePok;
-                    poki.setNombre(nombrePok);
+                    poki->setNombre(nombrePok);
 
-                    cout << "Color del Pokemon " << i + 1 << ":" << endl;
+                    cout << "Color de " << poki->getNombre() << ":" << endl;
                     cin >> colorPok;
-                    poki.setColor(colorPok);
+                    poki->setColor(colorPok);
 
-                    cout << "Ataque especial: " << endl;
+                    cout << "Vida de " << poki->getNombre() << ":" << endl;
+                    cin >> vida;
+                    poki->setVida(vida);
+
+                    cout << "Potencia de ataque de " << poki->getNombre() << ":" << endl;
+                    cin >> potAtaque;
+                    poki->setPotenciaDeAtaque(potAtaque);
+
+                    cout << "Ataque especial de " << poki->getNombre() <<":"<< endl;
                     cin >> ataqueEspecial;
-                    poki.setAtaqueEspecial(ataqueEspecial);
+                    poki->setAtaqueEspecial(ataqueEspecial);
                     try
                     {
-                        papuN.agregarpokemon(poki);
+                        papuN->agregarpokemon(poki);
                     }
                     catch (const Epersonalizado &e)
                     {
@@ -385,14 +391,14 @@ int main()
             cout << "Entrenadores disponibles: " << endl;
             for (int i = 0; i < entrenadores.size(); i++)
             {
-                cout << i + 1 << ") " << entrenadores[i].getNombre() << endl;
+                cout << i + 1 << ") " << entrenadores[i]->getNombre() << endl;
             }
             break;
         case 2:
         system("cls");
             do
             {
-                Batalla game;
+                Batalla *game = new Batalla;
                 cout << "Selecciona tu entrenador " << endl;
                 cin >> pro1;
                 cout << "Selecciona tu adversario" << endl;
@@ -422,7 +428,7 @@ int main()
 
                 for (int i = 0; i < entrenadores.size(); i++)
                 {
-                    cout << i + 1 << ") " << entrenadores[i].getNombre() << endl;
+                    cout << i + 1 << ") " << entrenadores[i]->getNombre() << endl;
                 }
                 int openanalizar;
                 cin >> openanalizar;
@@ -446,7 +452,7 @@ int main()
 
                 for (int i = 0; i < entrenadores.size(); i++)
                 {
-                    cout << "1) " << entrenadores[i].getNombre() << endl;
+                    cout << "1) " << entrenadores[i]->getNombre() << endl;
                 }
                 int pepitoperez = 0;
                 cout << "que entrenador escoges:" << endl;
@@ -466,9 +472,9 @@ int main()
                 cin >> pac2;
                 // aplicacion de la sobrecarga del operador + (creando el pokemon recargado)
                 cout << "se esta creando el pokemon..." << endl;
-                Pokemon pokemonrecargado = entrenadores[pepitoperez - 1].getPokemon(pac1 - 1) + entrenadores[pepitoperez - 1].getPokemon(pac2 - 1);
+                //Pokemon *pokemonrecargado = entrenadores[pepitoperez - 1]->getPokemon(pac1 - 1) + entrenadores[pepitoperez - 1]->getPokemon(pac2 - 1);
                 cout << "Pokemon recargado creado!! datos a continuacion: " << endl;
-                cout << pokemonrecargado;
+                //cout << pokemonrecargado;
             }
             
             break;
@@ -483,7 +489,7 @@ int main()
 
                 for (int i = 0; i < entrenadores.size(); i++)
                 {
-                    cout << i + 1 << ") " << entrenadores[i].getNombre() << endl;
+                    cout << i + 1 << ") " << entrenadores[i]->getNombre() << endl;
                 }
                 int ecom;
                 cout << "Entrenador a analizar 1: " << endl;
@@ -508,18 +514,18 @@ int main()
 
                 for (int i = 0; i < entrenadores.size(); i++)
                 {
-                    cout << i + 1 << ") " << entrenadores[i].getNombre() << endl;
+                    cout << i + 1 << ") " << entrenadores[i]->getNombre() << endl;
                 }
                 int ecompo;
                 cin >> ecompo;
                 cout << "Entrenador escogido: " << endl;
-                cout << entrenadores[ecompo - 1] << endl;
+                cout << entrenadores[ecompo - 1]<< endl;
                 int pokecomparar1, pokecomparar2;
                 cout << "Escoja 2 pokemones para comparar " << endl;
                 cin >> pokecomparar1;
                 cin >> pokecomparar2;
 
-                if (entrenadores[ecompo - 1].getPokemon(pokecomparar1 - 1).getNombre() == entrenadores[ecompo - 1].getPokemon(pokecomparar2 - 1).getNombre())
+                if (entrenadores[ecompo - 1]->getPokemon(pokecomparar1 - 1)->getNombre() == entrenadores[ecompo - 1]->getPokemon(pokecomparar2 - 1)->getNombre())
                 {
                     cout << "Los pokemones se llaman igual!" << endl;
                 }
@@ -528,7 +534,7 @@ int main()
                     cout << "Los pokemones no se llaman igual " << endl;
                 }
 
-                if (entrenadores[ecompo - 1].getPokemon(pokecomparar1 - 1).getNivel() == entrenadores[ecompo - 1].getPokemon(pokecomparar2).getNivel())
+                if (entrenadores[ecompo - 1]->getPokemon(pokecomparar1 - 1)->getNivel() == entrenadores[ecompo - 1]->getPokemon(pokecomparar2)->getNivel())
                 {
                     cout << "Los pokemones tienen el mismo nivel!" << endl;
                 }
@@ -537,7 +543,7 @@ int main()
                     cout << "Los pokemones no tienen el mismo nivel" << endl;
                 }
 
-                if (entrenadores[ecompo - 1].getPokemon(pokecomparar1 - 1).getAtaque() == entrenadores[ecompo - 1].getPokemon(pokecomparar2).getAtaque())
+                if (entrenadores[ecompo - 1]->getPokemon(pokecomparar1 - 1)->getAtaque() == entrenadores[ecompo - 1]->getPokemon(pokecomparar2)->getAtaque())
                 {
                     cout << "Los pokemones tienen el mismo ataque!" << endl;
                 }
@@ -546,7 +552,7 @@ int main()
                     cout << "Los pokemones no tienen el mismo ataque!" << endl;
                 }
 
-                if (entrenadores[ecompo - 1].getPokemon(pokecomparar1 - 1).getVida() == entrenadores[ecompo - 1].getPokemon(pokecomparar2).getVida())
+                if (entrenadores[ecompo - 1]->getPokemon(pokecomparar1 - 1)->getVida() == entrenadores[ecompo - 1]->getPokemon(pokecomparar2)->getVida())
                 {
                     cout << "Los pokemones tienen la misma vida!" << endl;
                 }
@@ -555,7 +561,7 @@ int main()
                     cout << "Los pokemones no tienen la misma vida!" << endl;
                 }
 
-                if (entrenadores[ecompo - 1].getPokemon(pokecomparar1 - 1).getXp() == entrenadores[ecompo - 1].getPokemon(pokecomparar2).getXp())
+                if (entrenadores[ecompo - 1]->getPokemon(pokecomparar1 - 1)->getXp() == entrenadores[ecompo - 1]->getPokemon(pokecomparar2)->getXp())
                 {
                     cout << "Los pokemones tienen la misma experiencia!" << endl;
                 }
@@ -564,7 +570,7 @@ int main()
                     cout << "Los pokemones no tienen la misma experiencia!" << endl;
                 }
 
-                if (entrenadores[ecompo - 1].getPokemon(pokecomparar1 - 1).getColor() == entrenadores[ecompo - 1].getPokemon(pokecomparar2).getColor())
+                if (entrenadores[ecompo - 1]->getPokemon(pokecomparar1 - 1)->getColor() == entrenadores[ecompo - 1]->getPokemon(pokecomparar2)->getColor())
                 {
                     cout << "Los pokemones tienen el mismo color!" << endl;
                 }
@@ -573,7 +579,7 @@ int main()
                     cout << "Los pokemones no tienen el mismo color!" << endl;
                 }
 
-                if (entrenadores[ecompo - 1].getPokemon(pokecomparar1 - 1).getAtaqueEspecial() == entrenadores[ecompo - 1].getPokemon(pokecomparar2).getAtaqueEspecial())
+                if (entrenadores[ecompo - 1]->getPokemon(pokecomparar1 - 1)->getAtaqueEspecial() == entrenadores[ecompo - 1]->getPokemon(pokecomparar2)->getAtaqueEspecial())
                 {
                     cout << "Los pokemones tienen el mismo ataque especial!" << endl;
                 }
@@ -602,44 +608,44 @@ int main()
     return 0;
 }
 
-Batalla lucharEntrenadores(Entrenador &rude1, Entrenador &rude2){
-    Batalla epicGame(rude1.getNombre(), rude2.getNombre());
+Batalla* lucharEntrenadores(Entrenador *rude1, Entrenador *rude2){
+    Batalla *epicGame= new Batalla(rude1->getNombre(), rude2->getNombre());
     bool ganador;
     int puntajeRude1 = 0, puntajeRude2 = 0;
 
     // ACLARACION:
-    // Este va a ser un sistema de lucha uno a uno. El primero con el primero, etc. Ya despues hacemos herencia para diferentes tipos de batalla
+    // Este va a ser un sistema de lucha uno a uno. El primero con el primero, etc-> Ya despues hacemos herencia para diferentes tipos de batalla
 
     for (int i = 0; i < 3; i++)
     {
         cout << "Combate " << i + 1 << endl;
-        cout << rude1.getNombre() << ": " << puntajeRude1 << "|| " << rude2.getNombre() << ": " << puntajeRude2 << endl;
-        epicGame.luchar(rude1.getPokemon(i), rude2.getPokemon(i), ganador); // Revisar método getPokemon de la clase Entrenador
+        cout << rude1->getNombre() << ": " << puntajeRude1 << "|| " << rude2->getNombre() << ": " << puntajeRude2 << endl;
+        epicGame->luchar(rude1->getPokemon(i), rude2->getPokemon(i), ganador); // Revisar método getPokemon de la clase Entrenador
         if (ganador)
         {
-            cout << "Tu pokemon " << rude1.getPokemon(i).getNombre() << " ha ganado!!" << endl;
-            rude1.entrenar(rude1.getPokemon(i), rude2.getPokemon(i));
-            epicGame.agregarPokGanador(rude1.getPokemon(i));
+            cout << "Tu pokemon " << rude1->getPokemon(i)->getNombre() << " ha ganado!!" << endl;
+            rude1->entrenar(rude1->getPokemon(i), rude2->getPokemon(i));
+            epicGame->agregarPokGanador(rude1->getPokemon(i));
             puntajeRude1++;            
         }
         else
         {
-            cout << rude2.getPokemon(i).getNombre() << "te ha vencido, y se ha vuelto más fuerte" <<endl;
-            rude2.entrenar(rude2.getPokemon(i), rude1.getPokemon(i));
-            epicGame.agregarPokGanador(rude2.getPokemon(i));
+            cout << rude2->getPokemon(i)->getNombre() << "te ha vencido, y se ha vuelto más fuerte" <<endl;
+            rude2->entrenar(rude2->getPokemon(i), rude1->getPokemon(i));
+            epicGame->agregarPokGanador(rude2->getPokemon(i));
             puntajeRude2++;
         }
     }
 
     if (puntajeRude1 > puntajeRude2)
     {
-        epicGame.setGanador(rude1);
+        epicGame->setGanador(rude1);
         cout << "Felicidades, has ganado!!!" << endl;
     }
     else
     {
         cout << "Has perdido" << endl;
-        epicGame.setGanador(rude2);
+        epicGame->setGanador(rude2);
     }
 
     return epicGame;
