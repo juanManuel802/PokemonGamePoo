@@ -119,7 +119,9 @@ public:
     }
     friend ostream &operator<<(ostream &o, Pokemon *p);
 
-    virtual void hacerGritoDeAsalto() {}
+    virtual void hacerGritoDeAsalto() {
+        cout << getNombre() << ": ";
+    }
     virtual string getAtaqueEspecial() const = 0;
 };
 ostream &operator<<(ostream &o, Pokemon *p)
@@ -135,6 +137,7 @@ public:
     PokemonHielo(string nombre, string color, int ataque, int vida, int xp, int nivel):  Pokemon(nombre, color, ataque, vida, xp, nivel),  ataqueEspecial("Congelamiento") {}
     string getAtaqueEspecial()const override {return ataqueEspecial;}
     void hacerGritoDeAsalto() override {
+        Pokemon::hacerGritoDeAsalto();  
         cout << "Aaauuuuuu"<< endl;
     }
 };
@@ -149,7 +152,8 @@ public:
     string getAtaqueEspecial()const override {return ataqueEspecial;}
     int getToxicidad() const {return toxicidad;}
     void hacerGritoDeAsalto() override {
-        cout << ""<< endl;
+        Pokemon::hacerGritoDeAsalto();
+        cout << "IAAchuuuff"<< endl;
     }
     void aumentarToxicidad(int plus) {
         toxicidad += plus;
@@ -166,6 +170,7 @@ public:
     string getAtaqueEspecial()const override {return ataqueEspecial;}
     int getEscudoAcero() const {return escudoAcero;}
     void hacerGritoDeAsalto() override {
+        Pokemon::hacerGritoDeAsalto();
         cout << ""<< endl;
     }
     void desgastarEscudo(int desgaste) {
@@ -308,7 +313,7 @@ public:
         ataqueOponente = oponente->getAtaque();
         nivelMipok = miPok->getNivel();
         nivelOponente = oponente->getNivel();
-        cout << "\n\n\n\n QUE COMIENCE LA PELEA!\n ";
+        cout << "\n\n\n\n          QUE COMIENCE LA PELEA!\n ";
         cout << miPok;
         cout << "\n          vs          \n";
         cout << oponente;
@@ -319,10 +324,18 @@ public:
         {
             srand(static_cast<unsigned>(time(0)));
             int restOp, restMi;
+            int dañoTotalOponente = 0, dañoTotalMiPok=0; //dañoTotal para extraer la informacion deel daño que hizo el pokemon luego del ataque cualquiera que sea
             char sig, tipoAtaque;
-            cout << "Ronda " << ronda << endl; // Inicia ronda
-            if (atq==1 && miPok->getAtaqueEspecial()=="Congelamiento")
+            dañoTotalOponente = ataqueOponente;
+            dañoTotalMiPok = ataqueMiPok;
+            cout << "\n\nRonda " << ronda << endl; // Inicia ronda
+            if(atq==0) { 
+                vidaMiPok -= dañoTotalOponente;
+                setRegistroDaño(getRegistroDaño() + ataqueOponente); 
+            }
+            else if (atq==1 && miPok->getAtaqueEspecial()=="Congelamiento")
             {
+                dañoTotalOponente = 0;
                 cout << oponente->getNombre() << " esta congelado!!!!" << endl;
                 atq++;
             }
@@ -330,7 +343,7 @@ public:
             {
                 cout << oponente->getNombre() << " esta intoxicado!" << endl;
                 cout << vidaOponente << " - " << dynamic_cast<PokemonVeneno*>(miPok)->getToxicidad() << endl;
-                vidaMiPok -= ataqueOponente;
+                vidaMiPok -= dañoTotalOponente;
                 vidaOponente -= dynamic_cast<PokemonVeneno*>(miPok)->getToxicidad();
                 setRegistroDaño(getRegistroDaño() + ataqueOponente + dynamic_cast<PokemonVeneno*>(miPok)->getToxicidad());
                 dynamic_cast<PokemonVeneno*>(miPok)->aumentarToxicidad(3);
@@ -340,6 +353,11 @@ public:
                 dynamic_cast<PokemonAcero*>(miPok)->desgastarEscudo(ataqueOponente*0.2);
                 vidaMiPok -= ataqueOponente - ataqueOponente*0.2;
             }
+            cout << "\n*********\n";
+            cout << oponente->getNombre() << " ha atacado " << endl;
+            cout << miPok->getNombre() << ": Vida: " << vidaMiPok + dañoTotalOponente << " - " << dañoTotalOponente << " ->  " << vidaMiPok << endl;
+            cout << "\n*********\n\n";
+
             miPok->setVida(vidaMiPok);
             // Verifica si sigue vivo
             if (vidaMiPok <= 0)
@@ -365,10 +383,12 @@ public:
                     }
                     else if (atq == 0 && tipoAtaque == 'p')
                     {
-                        vidaOponente -= (ataqueMiPok + ataqueMiPok * .4);
-                        setRegistroDaño(getRegistroDaño() + (ataqueMiPok + ataqueMiPok * .4));
+                        dañoTotalMiPok = ataqueMiPok + ataqueMiPok * .4;
+                        vidaOponente -= dañoTotalMiPok;
+                        setRegistroDaño(getRegistroDaño() + dañoTotalMiPok);
                         atq++;
-                        //cout << miPok->getNombre() << " lanzó su ataque especial de " << miPok->getAtaqueEspecial() << endl;
+                        //Aplicamos funcion virtual
+                        miPok->hacerGritoDeAsalto();
                         cond = false;
                     }
                     else if (atq != 0 && tipoAtaque == 'p')
@@ -388,9 +408,16 @@ public:
                     // continue;
                 }
             } while (cond);
-            cout << miPok->getNombre() << ": Vida: " << vidaMiPok<<endl;
-            cout << oponente->getNombre() << ": Vida: " << vidaOponente << endl;
-            cout << "\n\n*********\n\n";
+            cout << "\n*********\n";
+            cout << miPok->getNombre() << " ha atacado " << endl;
+            cout << oponente->getNombre() << ": Vida: " << vidaOponente + dañoTotalMiPok << " - " << dañoTotalMiPok << " ->  " << vidaOponente << endl;
+            cout << "\n*********\n\n";
+
+            cout << endl;
+            cout << "                    Resultado ronda " << ronda << endl;
+            cout <<"(Tu)->      || " << miPok->getNombre() << ": Vida: " << vidaMiPok<<endl;
+            cout <<"(Oponente)->|| " << oponente->getNombre() << ": Vida: " << vidaOponente << endl;
+            cout << "\n\n**************************************************************\n\n";
             do
             {
                 cout << "Presiona (n) para continuar" << endl;
