@@ -128,15 +128,15 @@ ostream &operator<<(ostream &o, Pokemon *p)
     return o << "\nNombre: " << p->getNombre() << " \n color: " << p->getColor() << "\n ataque: " << p->getAtaque() << "\n vida " << p->getVida() << " \n experiencia: " << p->getXp() << "\n nivel: " << p->getNivel() << "\n ataque especial: " << p->getAtaqueEspecial() << endl;
 }
 
-class PokemonHielo: public Pokemon {
-private:
-    string ataqueEspecial;
-public:
-    PokemonHielo(string nombre, string color, int ataque, int vida, int xp):  Pokemon(nombre, color, ataque, vida, xp),  ataqueEspecial("Congelar") {}
-    void hacerGritoDeAsalto() override {
-        cout << ""<< endl;
-    }
-};
+// class PokemonHielo: public Pokemon {
+// private:
+//     string ataqueEspecial;
+// public:
+//     PokemonHielo(string nombre, string color, int ataque, int vida, int xp):  Pokemon(nombre, color, ataque, vida, xp),  ataqueEspecial("Congelar") {}
+//     void hacerGritoDeAsalto() override {
+//         cout << ""<< endl;
+//     }
+// };
 
 
 class Entrenador
@@ -427,56 +427,7 @@ int main()
                 cout << "Dale un nombre al entrenador: " << endl;
                 cin >> nombre;
                 papuN->setNombre(nombre);
-                cout << "Ahora crea sus tres pokemones " << endl;
-                while (condPok == "Si" || condPok == "si") // este 4 es para hacer demostracion de la excepcion
-                {
-                    try
-                    {
-                        if (i > 0 && i < 3)
-                        {
-                            //system("cls");
-                        }
-                        else if (i == 3)
-                        {
-                            throw Epersonalizado("Error al agregar el pokemon", "El limite son 3 pokemones");
-                        }
-                        Pokemon *poki = new Pokemon;
-                        string nombrePok, colorPok, ataqueEspecial;
-
-                        cout << "Nombre del Pokemon " << i + 1 << ":" << endl;
-                        cin >> nombrePok;
-                        poki->setNombre(nombrePok);
-
-                        cout << "Color de " << poki->getNombre() << ":" << endl;
-                        cin >> colorPok;
-                        poki->setColor(colorPok);
-
-                        cout << "Vida de " << poki->getNombre() << ":" << endl;
-                        cout << "Desde 50 a 100" << endl;
-                        vida = ingresaPorRango(50,100);
-                        poki->setVida(vida);
-
-                        cout << "Potencia de ataque de " << poki->getNombre() << ":" << endl;
-                        cout << "Desde 10 a 20" << endl;
-                        potAtaque = ingresaPorRango(10,20);
-                        poki->setPotenciaDeAtaque(potAtaque);
-
-                        cout << "Ataque especial de " << poki->getNombre() << ":" << endl;
-                        cin >> ataqueEspecial;
-                        poki->setAtaqueEspecial(ataqueEspecial);
-
-                        papuN->agregarpokemon(poki);
-
-                        cout << "Deseas agregar otro pokemon?" << endl;
-                        cin >> condPok;
-                        i++;
-                    }
-                    catch (const Epersonalizado &e)
-                    {
-                        cerr << e.what() << endl;
-                        break;
-                    }
-                }
+            
                 entrenadores.push_back(papuN);
 
                 cout << "Deseas agregar otro entrenador? (Si/no)" << endl;
@@ -600,9 +551,23 @@ int main()
                     {
                         throw Epersonalizado("Error al agregar el pokemon", "El limite son 3 pokemones");
                     }
-                    Pokemon *poki = new Pokemon;
-                    int vida, potAtaque;
+                    
+                    int vida, potAtaque, tipoPoke;
                     string nombrePok, colorPok, ataqueEspecial;
+
+                    cout << "Que tipo de pokemon quieres elegir? " << endl;
+                    cout <<"1. Hielo" << endl;
+                    cout << "2. Veneno" << endl;
+                    cout << "3. Hacero" << endl;
+                    cin << tipoPoke;
+
+                    if(tipoPoke==1) {
+                        Pokemon *poki = new PokemonHielo;
+                    } else if(tipoPoke==2) {
+                        Pokemon *poki = new PokemonVeneno;
+                    } else if(tipoPokemon==3) {
+                        Pokemon *poki = new PokemonHacero;
+                    }
 
                     cout << "Nombre del Pokemon " << i + 1 << ":" << endl;
                     cin >> nombrePok;
@@ -619,10 +584,6 @@ int main()
                     cout << "Potencia de ataque de " << poki->getNombre() << ":" << endl;
                     cin >> potAtaque;
                     poki->setPotenciaDeAtaque(potAtaque);
-
-                    cout << "Ataque especial de " << poki->getNombre() << ":" << endl;
-                    cin >> ataqueEspecial;
-                    poki->setAtaqueEspecial(ataqueEspecial);
 
                     entrenadores[op - 1]->agregarpokemon(poki);
 
