@@ -409,7 +409,7 @@ public:
                 }
             } while (cond);
             cout << "\n*********\n";
-            cout << miPok->getNombre() << " ha atacado " << endl;
+            cout << miPok->getNombre() << " ha atacado " << endl << endl;
             cout << oponente->getNombre() << ": Vida: " << vidaOponente + dañoTotalMiPok << " - " << dañoTotalMiPok << " ->  " << vidaOponente << endl;
             cout << "\n*********\n\n";
 
