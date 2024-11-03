@@ -1,5 +1,7 @@
 #include <iostream>
 #include <vector>
+#include <ctime>
+#include <cstdlib>
 #include <exception>
 using namespace std;
 
@@ -42,7 +44,6 @@ public:
 
     string getNombre() const { return nombre; }
     string getColor() const { return color; }
-    string getAtaqueEspecial() const { return ataqueEspecial; }
     int getAtaque() const { return ataque; }
     int getVida() const { return vida; }
     int getXp() const { return xp; }
@@ -54,7 +55,6 @@ public:
     void setVida(int vida) { this->vida = vida; }
     void setXp(int xp) { this->xp = xp; }
     void setNivel(int nivel) { this->nivel = nivel; }
-    void setAtaqueEspecial(string ataqueEspecial) { this->ataqueEspecial = ataqueEspecial; }
 
     void saludar()
     {
@@ -70,7 +70,7 @@ public:
     }
     void mostrarDatos()
     {
-        cout << "\nNombre: " << getNombre() << " \n color: " << getColor() << "\n ataque: " << getAtaque() << "\n vida " << getVida() << " \n experiencia: " << getXp() << "\n nivel: " << getNivel() << "\n ataque especial: " << getAtaqueEspecial() << endl;
+        cout << "\nNombre: " << getNombre() << " \n color: " << getColor() << "\n ataque: " << getAtaque() << "\n vida " << getVida() << " \n experiencia: " << getXp() << "\n nivel: " << getNivel()<< endl;
     }
 
     void evolucionar(string nombre, string color)
@@ -100,44 +100,78 @@ public:
     }
 
     // sobrecarga del + para crear pokemon recargado
-    Pokemon *operator+(const Pokemon *c) const
-    {
-        // creamos un objeto nuevo de la clase cargo llamado "pokemonrecargado" e instantaneamente en sus parametros
-        // sumamos los atributos de otros objetos para agregarlos en los atributos de "pokemonrecargado"
-        // y luego se retorna el objeto
-        Pokemon *pokemonrecargado = new Pokemon(" SuperPokemon! ", " multicolor! ", ataque + c->ataque, vida + c->vida, xp + c->xp, nivel + c->nivel, "Vacio infinito!");
+    // Pokemon *operator+(const Pokemon *c) const
+    // {
+    //     // creamos un objeto nuevo de la clase cargo llamado "pokemonrecargado" e instantaneamente en sus parametros
+    //     // sumamos los atributos de otros objetos para agregarlos en los atributos de "pokemonrecargado"
+    //     // y luego se retorna el objeto
+    //     Pokemon *pokemonrecargado = new Pokemon(" SuperPokemon! ", " multicolor! ", ataque + c->ataque, vida + c->vida, xp + c->xp, nivel + c->nivel);
 
-        return pokemonrecargado;
-    }
-    bool operator==(const Pokemon &p) const
-    {
-        return (nombre == p.nombre &&
-                color == p.color &&
-                ataque == p.ataque &&
-                vida == p.vida &&
-                xp == p.xp &&
-                nivel == p.nivel &&
-                ataqueEspecial == p.ataqueEspecial);
+    //     return pokemonrecargado;
+    // }
+    bool operator==(const Pokemon &p) const {
+    return (nombre == p.nombre &&
+            color == p.color &&
+            ataque == p.ataque &&
+            vida == p.vida &&
+            xp == p.xp &&
+            nivel == p.nivel);
     }
     friend ostream &operator<<(ostream &o, Pokemon *p);
 
     virtual void hacerGritoDeAsalto() {}
+    virtual string getAtaqueEspecial() const = 0;
 };
 ostream &operator<<(ostream &o, Pokemon *p)
 {
     return o << "\nNombre: " << p->getNombre() << " \n color: " << p->getColor() << "\n ataque: " << p->getAtaque() << "\n vida " << p->getVida() << " \n experiencia: " << p->getXp() << "\n nivel: " << p->getNivel() << "\n ataque especial: " << p->getAtaqueEspecial() << endl;
 }
 
-// class PokemonHielo: public Pokemon {
-// private:
-//     string ataqueEspecial;
-// public:
-//     PokemonHielo(string nombre, string color, int ataque, int vida, int xp):  Pokemon(nombre, color, ataque, vida, xp),  ataqueEspecial("Congelar") {}
-//     void hacerGritoDeAsalto() override {
-//         cout << ""<< endl;
-//     }
-// };
+class PokemonHielo: public Pokemon {
+private:
+    string ataqueEspecial;
+public:
+    PokemonHielo(): Pokemon(), ataqueEspecial("Congelamiento") {}
+    PokemonHielo(string nombre, string color, int ataque, int vida, int xp, int nivel):  Pokemon(nombre, color, ataque, vida, xp, nivel),  ataqueEspecial("Congelamiento") {}
+    string getAtaqueEspecial()const override {return ataqueEspecial;}
+    void hacerGritoDeAsalto() override {
+        cout << "Aaauuuuuu"<< endl;
+    }
+};
 
+class PokemonVeneno: public Pokemon {
+private:
+    string ataqueEspecial;
+    int toxicidad;
+public:
+    PokemonVeneno(): Pokemon(), ataqueEspecial("Intoxicacion"), toxicidad(3) {}
+    PokemonVeneno(string nombre, string color, int ataque, int vida, int xp, int nivel):  Pokemon(nombre, color, ataque, vida, xp, nivel),  ataqueEspecial("Intoxicacion"), toxicidad(3) {}
+    string getAtaqueEspecial()const override {return ataqueEspecial;}
+    int getToxicidad() const {return toxicidad;}
+    void hacerGritoDeAsalto() override {
+        cout << ""<< endl;
+    }
+    void aumentarToxicidad(int plus) {
+        toxicidad += plus;
+    }
+};
+
+class PokemonAcero: public Pokemon {
+private:
+    string ataqueEspecial;
+    int escudoAcero;
+public:
+    PokemonAcero(): Pokemon(), ataqueEspecial("Escudo de acero"), escudoAcero(100) {}
+    PokemonAcero(string nombre, string color, int ataque, int vida, int xp, int nivel):  Pokemon(nombre, color, ataque, vida, xp, nivel),  ataqueEspecial("Escudo de acero"), escudoAcero(100) {}
+    string getAtaqueEspecial()const override {return ataqueEspecial;}
+    int getEscudoAcero() const {return escudoAcero;}
+    void hacerGritoDeAsalto() override {
+        cout << ""<< endl;
+    }
+    void desgastarEscudo(int desgaste) {
+        escudoAcero -= desgaste;
+    }
+};
 
 class Entrenador
 {
@@ -266,7 +300,7 @@ public:
 
     void luchar(Pokemon *miPok, Pokemon *oponente, bool &ganador)
     {
-        int vidaOponente, vidaMiPok, ataqueMiPok, ataqueOponente, nivelMipok, nivelOponente, xpMiPok, xpOponente, ronda = 1, atq = 0;
+        int vidaOponente, vidaMiPok, ataqueMiPok, ataqueOponente, nivelMipok, nivelOponente, xpMiPok, xpOponente, ronda = 1, atq = 0, atqO=0;
         char sig;
         vidaOponente = oponente->getVida();
         vidaMiPok = miPok->getVida();
@@ -283,18 +317,28 @@ public:
         cout << "Solo tienes una oportunidad para lanzar el ataque especial" << endl;
         while (vidaOponente > 0 && vidaMiPok > 0)
         {
+            srand(static_cast<unsigned>(time(0)));
             int restOp, restMi;
             char sig, tipoAtaque;
             cout << "Ronda " << ronda << endl; // Inicia ronda
-            if (ronda % 3 == 0 || vidaOponente < 40)
+            if (atq==1 && miPok->getAtaqueEspecial()=="Congelamiento")
             {
-                vidaMiPok -= (ataqueOponente + ataqueOponente * .3);
-                setRegistroDaño(getRegistroDaño() + (ataqueOponente + ataqueOponente * .4));
+                cout << oponente->getNombre() << " esta congelado!!!!" << endl;
+                atq++;
             }
-            else
+            else if (atq==1 && miPok->getAtaqueEspecial()=="Intoxicacion")
             {
+                cout << oponente->getNombre() << " esta intoxicado!" << endl;
+                cout << vidaOponente << " - " << dynamic_cast<PokemonVeneno*>(miPok)->getToxicidad() << endl;
                 vidaMiPok -= ataqueOponente;
-                setRegistroDaño(getRegistroDaño() + ataqueOponente);
+                vidaOponente -= dynamic_cast<PokemonVeneno*>(miPok)->getToxicidad();
+                setRegistroDaño(getRegistroDaño() + ataqueOponente + dynamic_cast<PokemonVeneno*>(miPok)->getToxicidad());
+                dynamic_cast<PokemonVeneno*>(miPok)->aumentarToxicidad(3);
+            } 
+            else if(atq==1 && miPok->getAtaqueEspecial()=="Escudo de acero" && dynamic_cast<PokemonAcero*>(miPok)->getEscudoAcero()>0)
+            {
+                dynamic_cast<PokemonAcero*>(miPok)->desgastarEscudo(ataqueOponente*0.2);
+                vidaMiPok -= ataqueOponente - ataqueOponente*0.2;
             }
             miPok->setVida(vidaMiPok);
             // Verifica si sigue vivo
@@ -314,6 +358,7 @@ public:
                     cin >> tipoAtaque;
                     if (tipoAtaque == 'x')
                     {
+                        
                         vidaOponente -= ataqueMiPok;
                         setRegistroDaño(getRegistroDaño() + ataqueMiPok);
                         cond = false;
@@ -323,7 +368,7 @@ public:
                         vidaOponente -= (ataqueMiPok + ataqueMiPok * .4);
                         setRegistroDaño(getRegistroDaño() + (ataqueMiPok + ataqueMiPok * .4));
                         atq++;
-                        cout << miPok->getNombre() << " lanzó su ataque especial de " << miPok->getAtaqueEspecial() << endl;
+                        //cout << miPok->getNombre() << " lanzó su ataque especial de " << miPok->getAtaqueEspecial() << endl;
                         cond = false;
                     }
                     else if (atq != 0 && tipoAtaque == 'p')
@@ -343,7 +388,7 @@ public:
                     // continue;
                 }
             } while (cond);
-            cout << miPok->getNombre() << ": Vida: " << vidaMiPok << endl;
+            cout << miPok->getNombre() << ": Vida: " << vidaMiPok<<endl;
             cout << oponente->getNombre() << ": Vida: " << vidaOponente << endl;
             cout << "\n\n*********\n\n";
             do
@@ -379,14 +424,14 @@ int main()
     vector<Entrenador *> entrenadores; // entrenadores del juego
     vector<Batalla *> batallas;
 
-    Pokemon* pikachu = new Pokemon("Pikachu", "Eléctrico", 20, 100, 0, 1, "Chispa");
-    Pokemon* charmander = new Pokemon("Charmander", "Fuego", 32, 100, 0, 1, "Llamarada");
-    Pokemon* bulbasaur = new Pokemon("Bulbasaur", "Planta", 12, 100, 0, 1, "Latigazo");
+    Pokemon *pikachu = new PokemonHielo("Pikachu", "Verde", 20, 100, 0, 1);
+    Pokemon *charmander = new PokemonVeneno("Charmander", "Fuxia", 32, 100, 0, 1);
+    Pokemon *bulbasaur = new PokemonAcero("Bulbasaur", "Rojo", 12, 100, 0, 1);
 
     // Crear Pokemones para el segundo entrenador
-    Pokemon* squirtle = new Pokemon("Squirtle", "Agua", 28, 100, 0, 1, "Hidrobomba");
-    Pokemon* pidgey = new Pokemon("Pidgey", "Volador", 30, 100, 0, 1, "Tornado");
-    Pokemon* rattata = new Pokemon("Rattata", "Normal", 16, 100, 0, 1, "Colmillo");
+    Pokemon *squirtle = new PokemonHielo("Squirtle", "Azul", 28, 100, 0, 1);
+    Pokemon *pidgey = new PokemonVeneno("Pidgey", "Violeta", 30, 100, 0, 1);
+    Pokemon *rattata = new PokemonAcero("Rattata", "Naranja", 16, 100, 0, 1);
 
     // Crear entrenadores
     vector<Pokemon*> pokemonesAsh = {pikachu, charmander, bulbasaur};
@@ -406,7 +451,7 @@ int main()
         cout << "2) Combatir" << endl;
         cout << "3) Analizar entrenador" << endl;
         cout << "4) Crear pokemon recargado" << endl;
-        cout << "5) Agregar pokemon a entrenador" << endl; // Aqui por idea NUESTRAA, vamos a hacer compra de pokemones para agregarlos a los entreadores(ximena y los metidos)
+        cout << "5) Agregar pokemon a entrenador" << endl;
         cout << "6) Comparar" << endl;
         cout << "7) Historial" << endl;
         cout << "8) Salir" << endl;
@@ -553,22 +598,25 @@ int main()
                     }
                     
                     int vida, potAtaque, tipoPoke;
-                    string nombrePok, colorPok, ataqueEspecial;
+                    string nombrePok, colorPok; //no ataqueEspecial
 
                     cout << "Que tipo de pokemon quieres elegir? " << endl;
                     cout <<"1. Hielo" << endl;
                     cout << "2. Veneno" << endl;
-                    cout << "3. Hacero" << endl;
-                    cin << tipoPoke;
+                    cout << "3. Acero" << endl;
+                    cin >> tipoPoke;
 
-                    if(tipoPoke==1) {
-                        Pokemon *poki = new PokemonHielo;
+                    
+                    Pokemon *poki; //Pienso
+                    if(tipoPoke==1) { //Luego existo
+                        poki = new PokemonHielo;
                     } else if(tipoPoke==2) {
-                        Pokemon *poki = new PokemonVeneno;
-                    } else if(tipoPokemon==3) {
-                        Pokemon *poki = new PokemonHacero;
+                        poki = new PokemonVeneno;
+                    } else if(tipoPoke==3) {
+                        poki = new PokemonAcero;
                     }
 
+                    
                     cout << "Nombre del Pokemon " << i + 1 << ":" << endl;
                     cin >> nombrePok;
                     poki->setNombre(nombrePok);
@@ -578,11 +626,13 @@ int main()
                     poki->setColor(colorPok);
 
                     cout << "Vida de " << poki->getNombre() << ":" << endl;
-                    cin >> vida;
+                    cout << "Desde 70 a 100" << endl;
+                    vida = ingresaPorRango(70,100);
                     poki->setVida(vida);
 
                     cout << "Potencia de ataque de " << poki->getNombre() << ":" << endl;
-                    cin >> potAtaque;
+                    cout << "Desde 10 a 30" << endl;
+                    potAtaque = ingresaPorRango(10, 30);
                     poki->setPotenciaDeAtaque(potAtaque);
 
                     entrenadores[op - 1]->agregarpokemon(poki);
@@ -699,15 +749,6 @@ int main()
                 else
                 {
                     cout << "Los pokemones no tienen el mismo color!" << endl;
-                }
-
-                if (entrenadores[ecompo - 1]->getPokemon(pokecomparar1 - 1)->getAtaqueEspecial() == entrenadores[ecompo - 1]->getPokemon(pokecomparar2)->getAtaqueEspecial())
-                {
-                    cout << "Los pokemones tienen el mismo ataque especial!" << endl;
-                }
-                else
-                {
-                    cout << "Los pokemones no tienen el mismo ataque especial!" << endl;
                 }
             }
             break;
