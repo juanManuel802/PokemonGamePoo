@@ -19,19 +19,18 @@ public:
 };
 class Pokemon
 {
-private:
+protected:
     string nombre;
     string color;
     int ataque;
     int vida;
     int xp;
     int nivel;
-    string ataqueEspecial;
 
 public:
-    Pokemon(): nombre("Pokemon"), color("amarillo"), ataque(20), vida(100), xp(0), nivel(1), ataqueEspecial("") {}
+    Pokemon(): nombre("Pokemon"), color("amarillo"), ataque(20), vida(100), xp(0), nivel(1) {}
 
-    Pokemon(string nombre, string color, int ataque, int vida, int xp, int nivel, string ataqueEspecial)
+    Pokemon(string nombre, string color, int ataque, int vida, int xp, int nivel)
     {
         this->nombre = nombre;
         this->color = color;
@@ -39,7 +38,6 @@ public:
         this->vida = vida;
         this->xp = xp;
         this->nivel = nivel;
-        this->ataqueEspecial = ataqueEspecial;
     }
 
     string getNombre() const { return nombre; }
@@ -122,16 +120,29 @@ public:
                 ataqueEspecial == p.ataqueEspecial);
     }
     friend ostream &operator<<(ostream &o, Pokemon *p);
+
+    virtual void hacerGritoDeAsalto() {}
 };
 ostream &operator<<(ostream &o, Pokemon *p)
 {
     return o << "\nNombre: " << p->getNombre() << " \n color: " << p->getColor() << "\n ataque: " << p->getAtaque() << "\n vida " << p->getVida() << " \n experiencia: " << p->getXp() << "\n nivel: " << p->getNivel() << "\n ataque especial: " << p->getAtaqueEspecial() << endl;
 }
 
+class PokemonHielo: public Pokemon {
+private:
+    string ataqueEspecial;
+public:
+    PokemonHielo(string nombre, string color, int ataque, int vida, int xp):  Pokemon(nombre, color, ataque, vida, xp),  ataqueEspecial("Congelar") {}
+    void hacerGritoDeAsalto() override {
+        cout << ""<< endl;
+    }
+};
+
+
 class Entrenador
 {
 private:
-    vector<Pokemon *> misPokemones; // aunque debe ser 3, eso se maneja en la excepción
+    vector<Pokemon*> misPokemones; // aunque debe ser 3, eso se maneja en la excepción
     string nombre;
     int nivel;
 
@@ -184,6 +195,13 @@ public:
         cout << miPok;
     }
 
+    void mostrarPokemones() {
+        for (const auto &poke : misPokemones){
+            cout << poke << " " << endl;
+        }
+    }
+    
+
     void aumentarNivel()
     {
         setNivel(getNivel() + 1);
@@ -206,14 +224,9 @@ public:
 };
 ostream &operator<<(ostream &o, Entrenador *c)
 {
-    o << "Entrenador: " << c->nombre << endl <<
-    "Pokemones:  " << endl;
-
-    for (const auto &poke : c->misPokemones)
-    {
-        o << poke << " ";
-    }
-    return o;
+    //    return o << "\nNombre: " << p->getNombre() << " \n color: " << p->getColor() << "\n ataque: " << p->getAtaque() << "\n vida " << p->getVida() << " \n experiencia: " << p->getXp() << "\n nivel: "
+    // << p->getNivel() << "\n ataque especial: " << p->getAtaqueEspecial() << endl;
+    return o << "Entrenador: " << c->getNombre() << endl << "Nivel:  " << c->getNivel() << endl;
 }
 ////system("cls");
 class Batalla
@@ -358,7 +371,7 @@ ostream &operator<<(ostream &o, Batalla *c)
 }
 
 Batalla *lucharEntrenadores(Entrenador *rude1, Entrenador *rude2);
-
+int ingresaPorRango(int inicio, int fin);
 int main()
 {
     string cond = "Si";
@@ -366,14 +379,14 @@ int main()
     vector<Entrenador *> entrenadores; // entrenadores del juego
     vector<Batalla *> batallas;
 
-    Pokemon* pikachu = new Pokemon("Pikachu", "Eléctrico", 55, 35, 100, 5, "Chispa");
-    Pokemon* charmander = new Pokemon("Charmander", "Fuego", 52, 43, 100, 5, "Llamarada");
-    Pokemon* bulbasaur = new Pokemon("Bulbasaur", "Planta", 49, 49, 100, 5, "Latigazo");
+    Pokemon* pikachu = new Pokemon("Pikachu", "Eléctrico", 20, 100, 0, 1, "Chispa");
+    Pokemon* charmander = new Pokemon("Charmander", "Fuego", 32, 100, 0, 1, "Llamarada");
+    Pokemon* bulbasaur = new Pokemon("Bulbasaur", "Planta", 12, 100, 0, 1, "Latigazo");
 
     // Crear Pokemones para el segundo entrenador
-    Pokemon* squirtle = new Pokemon("Squirtle", "Agua", 48, 65, 100, 5, "Hidrobomba");
-    Pokemon* pidgey = new Pokemon("Pidgey", "Volador", 45, 40, 100, 5, "Tornado");
-    Pokemon* rattata = new Pokemon("Rattata", "Normal", 56, 35, 100, 5, "Colmillo");
+    Pokemon* squirtle = new Pokemon("Squirtle", "Agua", 28, 100, 0, 1, "Hidrobomba");
+    Pokemon* pidgey = new Pokemon("Pidgey", "Volador", 30, 100, 0, 1, "Tornado");
+    Pokemon* rattata = new Pokemon("Rattata", "Normal", 16, 100, 0, 1, "Colmillo");
 
     // Crear entrenadores
     vector<Pokemon*> pokemonesAsh = {pikachu, charmander, bulbasaur};
@@ -439,11 +452,13 @@ int main()
                         poki->setColor(colorPok);
 
                         cout << "Vida de " << poki->getNombre() << ":" << endl;
-                        cin >> vida;
+                        cout << "Desde 50 a 100" << endl;
+                        vida = ingresaPorRango(50,100);
                         poki->setVida(vida);
 
                         cout << "Potencia de ataque de " << poki->getNombre() << ":" << endl;
-                        cin >> potAtaque;
+                        cout << "Desde 10 a 20" << endl;
+                        potAtaque = ingresaPorRango(10,20);
                         poki->setPotenciaDeAtaque(potAtaque);
 
                         cout << "Ataque especial de " << poki->getNombre() << ":" << endl;
@@ -484,8 +499,10 @@ int main()
                 Batalla *game = new Batalla;
                 for (int i = 0; i < entrenadores.size(); i++)
                 {
-                    cout << "///////////////////////////////////////////////////////" << endl;
-                    cout <<  i + 1 << ") " << entrenadores[i]->getNombre() << endl;
+                    cout << "*************************************************************" << endl;
+                    cout <<  i + 1 << ") " << entrenadores[i] << endl;
+                    cout << "Pokemones: " << endl;
+                    entrenadores[i]->mostrarPokemones();
                 }
                 cout << "Selecciona tu entrenador " << endl;
                 cin >> pro1;
@@ -510,32 +527,21 @@ int main()
         }
         case 3:
         {
-            //system("cls");
-            cout << "Ver info de entrenadores? 1.si 2.no" << endl;
-            cin >> opcion;
+            
+            cout << "Que entrenador desea analizar? " << endl;
+            cout << "Entrenadores disponibles: " << endl;
 
-            if (opcion == 1)
+            for (int i = 0; i < entrenadores.size(); i++)
             {
-                cout << "Que entrenador desea analizar? " << endl;
-                cout << "Entrenadores disponibles: " << endl;
-
-                for (int i = 0; i < entrenadores.size(); i++)
-                {
-                    cout << i + 1 << ") " << entrenadores[i]->getNombre() << endl;
-                }
-                int openanalizar;
-                cin >> openanalizar;
-                // excepcion que suelte error si escoge algo distinto a 1 2 o 3
-                if (openanalizar == 1 || openanalizar == 2 || openanalizar == 3)
-                {
-                    cout << entrenadores[openanalizar - 1] << endl;
-                }
+                cout << i + 1 << ") " << entrenadores[i]->getNombre() << endl;
             }
-            else
+            int openanalizar;
+            cin >> openanalizar;
+            // excepcion que suelte error si escoge algo distinto a 1 2 o 3
+            if (openanalizar == 1 || openanalizar == 2 || openanalizar == 3)
             {
-                cout << "siguiendo normalmente con el programa (señor usuario, ignore este mensaje)" << endl;
+                cout << entrenadores[openanalizar - 1] << endl;
             }
-            // hasta la linea 325 llega la opcion "analizar entrenadores" del menú que haremos
             break;
         }
 
@@ -769,10 +775,25 @@ int main()
     return 0;
 }
 
+int ingresaPorRango(int inicio, int fin) {
+    int  valor;
+    bool repetir = true;
+    while (repetir) {
+        cin >> valor;
+        if (valor >= inicio && valor <= fin) {
+            repetir = false;
+        }           
+         else {
+            cout << "Valor fuera de rango" << endl;
+        }
+    }
+    return valor;
+}
+
 Batalla *lucharEntrenadores(Entrenador *rude1, Entrenador *rude2)
 {
     Batalla *epicGame = new Batalla(rude1->getNombre(), rude2->getNombre());
-    bool ganador;
+    bool ganador = true;
     int puntajeRude1 = 0, puntajeRude2 = 0;
 
     // ACLARACION:
