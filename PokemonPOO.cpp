@@ -169,7 +169,7 @@ private:
 
 public:
     PokemonAcero() : Pokemon(), ataqueEspecial("Escudo de acero"), escudoAcero(100) {}
-    PokemonAcero(string nombre, string color, int ataque, int vida, int xp, int nivel) : Pokemon(nombre, color, ataque, vida, xp, nivel), ataqueEspecial("Escudo de acero"), escudoAcero(100) {}
+    PokemonAcero(string nombre, string color, int ataque, int vida, int xp, int nivel) : Pokemon(nombre, color, ataque, vida, xp, nivel), ataqueEspecial("Escudo de Acero"), escudoAcero(100) {}
     string getAtaqueEspecial() const override { return ataqueEspecial; }
     int getEscudoAcero() const { return escudoAcero; }
     void hacerGritoDeAsalto() override
@@ -313,7 +313,7 @@ public:
             bool congeladoverop = false;
             bool congeladovermi = false;
             int restOp, restMi;
-            int dañoTotalOponente = 0, dañoTotalMiPok = 0; // dañoTotal para extraer la informacion deel daño que hizo el pokemon luego del ataque cualquiera que sea
+            int  vidaMiPokantes=0,vidaOponenteantes=0, dañoTotalOponente = 0, dañoTotalMiPok = 0; // dañoTotal para extraer la informacion deel daño que hizo el pokemon luego del ataque cualquiera que sea
             char sig, tipoAtaque;
             dañoTotalOponente = ataqueOponente;
             dañoTotalMiPok = ataqueMiPok;
@@ -325,6 +325,7 @@ public:
             // esto es para confirmar si si sirvio la variable aleatoria
             cout << "variable aletoria : " << variableAleatoria << endl;
             if (atq == 0 || atq > 1)
+
             { // atq>1 para confirmar si ya se usó el especial y si es asi, mandar solo normales ahora
                 vidaMiPok -= dañoTotalOponente;
                 setRegistroDaño(getRegistroDaño() + ataqueOponente);
@@ -346,10 +347,14 @@ public:
                 setRegistroDaño(getRegistroDaño() + ataqueOponente + dynamic_cast<PokemonVeneno *>(miPok)->getToxicidad());
                 dynamic_cast<PokemonVeneno *>(miPok)->aumentarToxicidad(3);
             }
-            else if (atq == 1 && miPok->getAtaqueEspecial() == "Escudo de acero" && dynamic_cast<PokemonAcero *>(miPok)->getEscudoAcero() > 0)
+            else if (atq == 1 && miPok->getAtaqueEspecial() == "Escudo de Acero" && dynamic_cast<PokemonAcero *>(miPok)->getEscudoAcero() > 0)
             {
+                cout<< oponente->getNombre() << " atacó pero el escudo de Acero mitiga parte del ataque!!" << endl;
+                cout<<"Escudo actual de "<<miPok->getNombre()<<" : "<< dynamic_cast<PokemonAcero *>(oponente)->getEscudoAcero() <<endl;
+                vidaMiPokantes=vidaMiPok;
                 dynamic_cast<PokemonAcero *>(miPok)->desgastarEscudo(ataqueOponente * 0.2);
-                vidaMiPok -= (ataqueOponente - ataqueOponente * 0.2);
+                vidaMiPok -= (ataqueOponente - (ataqueOponente * 0.2));
+
             }
             cout << "\n**************************************************************\n";
             if (congeladoverop)
@@ -361,9 +366,12 @@ public:
                 // si la variable es 1, usa su ataque especial, aqui solo muestra al usuario que la usó
                 if (variableAleatoria == 1 && atqO == 0)
                 {
+                    vidaMiPokantes=vidaMiPok;
                     // aqui le cambio el valor para que el programa siga, si no hago eso pailas jaja Rojo
                     // ES MIENTRAS PRUEBO
                     // variableAleatoria++;
+
+                    //le suma a atqO para que se diferencie de: (NO SE USÓ=0) &  (SE USÓ =1)
                     atqO++;
                     if (atqO == 1)
                     {
@@ -383,10 +391,21 @@ public:
                         {
                             cout << " Escudo de Acero!! : ";
                             oponente->hacerGritoDeAsalto();
+
+                            //aca al activar el escudo (cosa que se muestra solo una vez, va a atacar)
+                            cout << "Vida de " << miPok->getNombre() << ": " << vidaMiPok+ dañoTotalOponente << " - " <<ataqueOponente<< " ->  " << vidaMiPok << endl;
+
                         }
                     }
                 }
-                else if (variableAleatoria != 1)
+                else if(vidaMiPokantes>0){
+
+                                cout << oponente->getNombre() << " ha atacado " << endl;
+                                 cout << "Vida de " << miPok->getNombre() << ": " << vidaMiPokantes<< " - " << (ataqueOponente - (ataqueOponente * 0.2)) << " ->  " << vidaMiPok << endl;
+
+
+                            }else
+
                 {
                     cout << oponente->getNombre() << " ha atacado " << endl;
                     cout << "Vida de " << miPok->getNombre() << ": " << vidaMiPok + dañoTotalOponente << " - " << dañoTotalOponente << " ->  " << vidaMiPok << endl;
@@ -409,7 +428,7 @@ public:
                 {
                     if (variableAleatoria == 1 && atqO == 1 && oponente->getAtaqueEspecial() == "Intoxicacion")
                     {
-
+                        variableAleatoria=2;
                         cout << miPok->getNombre() << " esta intoxicado y el veneno empeora! NOOOO " << endl;
                         cout << vidaMiPok << " - " << dynamic_cast<PokemonVeneno *>(oponente)->getToxicidad() << " = ";
                         // vidaOponente -= dañoTotalMiPok;
@@ -435,7 +454,7 @@ public:
                     }
                     if (tipoAtaque == 'x' && variableAleatoria == 1)
                     {
-                        // variableAleatoria=2;
+                         variableAleatoria=2;
                         if (oponente->getAtaqueEspecial() == "Congelamiento" && atqO == 1)
                         {
                             dañoTotalMiPok = 0;
@@ -443,11 +462,17 @@ public:
                             atqO++;
                             congeladovermi = true;
                         }
-                        else if (oponente->getAtaqueEspecial() == "Escudo de Acero" && dynamic_cast<PokemonAcero *>(oponente)->getEscudoAcero() > 0)
+                        else if (oponente->getAtaqueEspecial() == "Escudo de Acero" && (dynamic_cast<PokemonAcero *>(oponente)->getEscudoAcero() > 0) && atqO == 1)
                         {
+
+                            cout<<"Escudo actual de "<<oponente->getNombre()<<" : "<< dynamic_cast<PokemonAcero *>(oponente)->getEscudoAcero() <<endl;
+
                             dynamic_cast<PokemonAcero *>(oponente)->desgastarEscudo(ataqueMiPok * 0.2);
-                            vidaOponente -= (ataqueMiPok - ataqueMiPok * 0.2);
+                            //variable que guarda la vida del oponente ANTES de recibir el daño reducido
+                            vidaOponenteantes = vidaOponente;
+                            vidaOponente -= (ataqueMiPok - (ataqueMiPok * 0.2));
                             setRegistroDaño(getRegistroDaño() + ataqueMiPok - ataqueMiPok * 0.2);
+
                         }
                         cout << "\n**************************************************************\n";
                         if (congeladovermi)
@@ -456,10 +481,14 @@ public:
                         }
                         else
                         {
+                            if(vidaOponenteantes>0){
+                                cout<<"no se cumple no me va a pegar de nuevo"<<endl;
+                            }else{
+                            cout<<"me volvio a bajar vida"<<endl;
                             vidaOponente -= ataqueMiPok;
                             setRegistroDaño(getRegistroDaño() + ataqueMiPok);
                             cond = false;
-                        }
+                        }}
                     }
                     else if (tipoAtaque == 'x')
                     {
@@ -481,12 +510,21 @@ public:
                             atqO++;
                             congeladovermi = true;
                         }
-                        else if (oponente->getAtaqueEspecial() == "Escudo de Acero" && dynamic_cast<PokemonAcero *>(oponente)->getEscudoAcero() > 0)
+                        else if ( atqO==1 && oponente->getAtaqueEspecial() == "Escudo de Acero" &&  dynamic_cast<PokemonAcero *>(oponente)->getEscudoAcero() > 0)
                         {
+
+                            cout<<"Escudo actual de "<<oponente->getNombre()<<" : "<< dynamic_cast<PokemonAcero *>(oponente)->getEscudoAcero() <<endl;
+
+                            //variable que guarda la vida del oponente ANTES de recibir el daño reducido
+                            vidaOponenteantes = vidaOponente;
+                            //este es el daño extra por usar ataque especial
                             dañoTotalMiPok = ataqueMiPok + ataqueMiPok * .4;
+                            //aqui esta el proceso para mitigar un 20% del daño de nuestro pokemon hacia el enemigo (ya que este ultimo usó su ataque especial )
                             dynamic_cast<PokemonAcero *>(oponente)->desgastarEscudo((ataqueMiPok + ataqueMiPok * .4) * 0.2);
-                            vidaOponente -= ((ataqueMiPok + ataqueMiPok * .4) - (ataqueMiPok + ataqueMiPok * .4) * 0.2);
+                            vidaOponente -= ((ataqueMiPok + ataqueMiPok * .4) - ((ataqueMiPok + ataqueMiPok * .4) * 0.2));
                             setRegistroDaño(getRegistroDaño() + (ataqueMiPok + ataqueMiPok * .4) - ((ataqueMiPok + ataqueMiPok * .4) * 0.2));
+                            cout<<vidaOponente;
+                            cout<<vidaOponente;
                         }
                         if (congeladovermi)
                         {
@@ -494,11 +532,14 @@ public:
                         }
                         else
                         {
-
+                            if(vidaOponenteantes>0){
+                                cout<<"hola no se cumplio jiji"<<endl;
+                            }else{
                             dañoTotalMiPok = ataqueMiPok + ataqueMiPok * .4;
                             vidaOponente -= dañoTotalMiPok;
                             setRegistroDaño(getRegistroDaño() + dañoTotalMiPok);
                             atq++;
+                            }
                             // Aplicamos funcion virtual
                             cout << miPok->getNombre() << " Ha usado su ataque especial:";
                             if (miPok->getAtaqueEspecial() == "Congelamiento")
@@ -558,10 +599,18 @@ public:
             } while (cond);
             if (vidaMiPok > 0)
             {
+                if(vidaOponenteantes>0){
+                    cout << "\n**************************************************************\n";
+                cout << miPok->getNombre() << " ha atacado pero el escudo de " <<oponente->getNombre()<<" mitiga parte del daño "<< endl;
+                cout << oponente->getNombre() << ": Vida: " << vidaOponenteantes << " - " <<((ataqueMiPok + ataqueMiPok * .4) - ((ataqueMiPok + ataqueMiPok * .4) * 0.2))  << " ->  " << vidaOponente << endl;
+                cout << "\n**************************************************************\n\n";
+                }else
+                {
                 cout << "\n**************************************************************\n";
                 cout << miPok->getNombre() << " ha atacado " << endl;
                 cout << oponente->getNombre() << ": Vida: " << vidaOponente + dañoTotalMiPok << " - " << dañoTotalMiPok << " ->  " << vidaOponente << endl;
                 cout << "\n**************************************************************\n\n";
+                }
             }
             else
             {
@@ -605,20 +654,20 @@ int main()
     vector<Entrenador *> entrenadores; // entrenadores del juego
     vector<Batalla *> batallas;
 
-    Pokemon *pikachu = new PokemonHielo("Pikachu", "Verde", 20, 100, 0, 1);
+    Pokemon *pikachu = new PokemonHielo("Pikachu", "Verde", 30, 100, 0, 1);
     Pokemon *charmander = new PokemonVeneno("Charmander", "Fuxia", 32, 100, 0, 1);
-    Pokemon *bulbasaur = new PokemonAcero("Bulbasaur", "Rojo", 12, 100, 0, 1);
+    Pokemon *bulbasaur = new PokemonAcero("Bulbasaur", "Rojo", 30, 100, 0, 1);
 
     // Crear Pokemones para el segundo entrenador
-    Pokemon *squirtle = new PokemonHielo("Squirtle", "Azul", 28, 100, 0, 1);
+    Pokemon *squirtle = new PokemonHielo("Squirtle", "Azul", 30, 100, 0, 1);
     Pokemon *pidgey = new PokemonVeneno("Pidgey", "Violeta", 30, 100, 0, 1);
-    Pokemon *rattata = new PokemonAcero("Rattata", "Naranja", 16, 100, 0, 1);
+    Pokemon *rattata = new PokemonAcero("Rattata", "Naranja", 30, 100, 0, 1);
 
     // Crear entrenadores
-    vector<Pokemon *> pokemonesAsh = {charmander, pikachu, bulbasaur};
+    vector<Pokemon *> pokemonesAsh = {bulbasaur, pikachu,charmander};
     Entrenador *ash = new Entrenador("Ash", pokemonesAsh);
 
-    vector<Pokemon *> pokemonesMisty = {pidgey, squirtle, rattata};
+    vector<Pokemon *> pokemonesMisty = {rattata, squirtle, pidgey};
     Entrenador *misty = new Entrenador("Misty", pokemonesMisty);
 
     // Agregar entrenadores al vector
@@ -880,7 +929,7 @@ Batalla *lucharEntrenadores(Entrenador *rude1, Entrenador *rude2)
         }
         else
         {
-            cout << rude2->getPokemon(i)->getNombre() << "te ha vencido, y se ha vuelto más fuerte" << endl;
+            cout << rude2->getPokemon(i)->getNombre() << " te ha vencido, y se ha vuelto más fuerte" << endl;
             rude2->entrenar(rude2->getPokemon(i));
             if (rude2->getPokemon(i)->verificarAumentoNivel())
             {
