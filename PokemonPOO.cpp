@@ -1,11 +1,3 @@
-/******************************************************************************
-
-                              Online C++ Compiler.
-               Code, Compile, Run and Debug C++ program online.
-Write your code in this editor and press "Run" button to compile and execute it.
-
-*******************************************************************************/
-
 #include <iostream>
 #include <vector>
 #include <ctime>
@@ -38,7 +30,7 @@ protected:
     int nivel;
 
 public:
-    Pokemon(): nombre("Pokemon"), color("amarillo"), ataque(20), vida(100), xp(0), nivel(1) {}
+    Pokemon() : nombre("Pokemon"), color("amarillo"), ataque(20), vida(100), xp(0), nivel(1) {}
 
     Pokemon(string nombre, string color, int ataque, int vida, int xp, int nivel)
     {
@@ -78,23 +70,25 @@ public:
     }
     void mostrarDatos()
     {
-        cout << "\nNombre: " << getNombre() << " \n color: " << getColor() << "\n ataque: " << getAtaque() << "\n vida " << getVida() << " \n experiencia: " << getXp() << "\n nivel: " << getNivel()<< endl;
+        cout << "\nNombre: " << getNombre() << " \n color: " << getColor() << "\n ataque: " << getAtaque() << "\n vida " << getVida() << " \n experiencia: " << getXp() << "\n nivel: " << getNivel() << endl;
     }
 
-    void evolucionar(string nombre, string color)
+    void evolucionar()
     {
-        if (nivel == 2)
+        int aumentoPot;
+        if (nivel > 3)
         {
             this->nombre = nombre;
             this->color = color;
             ataque += ataque * 0.2;
+            aumentoPot = 20;
         }
-        else if (nivel == 3)
+        else
         {
-            this->nombre = nombre;
-            this->color = color;
-            ataque += ataque * 0.2;
+            ataque += ataque * 0.1;
+            aumentoPot = 10;
         }
+        cout << "La potencia ha aumentado un " << aumentoPot << endl;
         mostrarDatos();
     }
     bool verificarAumentoNivel()
@@ -107,17 +101,8 @@ public:
         nivel++;
     }
 
-    // sobrecarga del + para crear pokemon recargado
-    // Pokemon *operator+(const Pokemon *c) const
-    // {
-    //     // creamos un objeto nuevo de la clase cargo llamado "pokemonrecargado" e instantaneamente en sus parametros
-    //     // sumamos los atributos de otros objetos para agregarlos en los atributos de "pokemonrecargado"
-    //     // y luego se retorna el objeto
-    //     Pokemon *pokemonrecargado = new Pokemon(" SuperPokemon! ", " multicolor! ", ataque + c->ataque, vida + c->vida, xp + c->xp, nivel + c->nivel);
-
-    //     return pokemonrecargado;
-    // }
-    bool operator==(const Pokemon &p) const {
+    bool operator==(const Pokemon &p) const
+    {
         return (nombre == p.nombre &&
                 color == p.color &&
                 ataque == p.ataque &&
@@ -127,7 +112,8 @@ public:
     }
     friend ostream &operator<<(ostream &o, Pokemon *p);
 
-    virtual void hacerGritoDeAsalto() {
+    virtual void hacerGritoDeAsalto()
+    {
         cout << getNombre() << ": ";
     }
     virtual string getAtaqueEspecial() const = 0;
@@ -137,51 +123,62 @@ ostream &operator<<(ostream &o, Pokemon *p)
     return o << "\nNombre: " << p->getNombre() << " \n color: " << p->getColor() << "\n ataque: " << p->getAtaque() << "\n vida " << p->getVida() << " \n experiencia: " << p->getXp() << "\n nivel: " << p->getNivel() << "\n ataque especial: " << p->getAtaqueEspecial() << endl;
 }
 
-class PokemonHielo: public Pokemon {
+class PokemonHielo : public Pokemon
+{
 private:
     string ataqueEspecial;
+
 public:
-    PokemonHielo(): Pokemon(), ataqueEspecial("Congelamiento") {}
-    PokemonHielo(string nombre, string color, int ataque, int vida, int xp, int nivel):  Pokemon(nombre, color, ataque, vida, xp, nivel),  ataqueEspecial("Congelamiento") {}
-    string getAtaqueEspecial()const override {return ataqueEspecial;}
-    void hacerGritoDeAsalto() override {
+    PokemonHielo() : Pokemon(), ataqueEspecial("Congelamiento") {}
+    PokemonHielo(string nombre, string color, int ataque, int vida, int xp, int nivel) : Pokemon(nombre, color, ataque, vida, xp, nivel), ataqueEspecial("Congelamiento") {}
+    string getAtaqueEspecial() const override { return ataqueEspecial; }
+    void hacerGritoDeAsalto() override
+    {
         Pokemon::hacerGritoDeAsalto();
-        cout << "Aaaaa CHU! frrrrrss!! "<< endl;
+        cout << "Aaaaa CHU! frrrrrss!! " << endl;
     }
 };
 
-class PokemonVeneno: public Pokemon {
+class PokemonVeneno : public Pokemon
+{
 private:
     string ataqueEspecial;
     int toxicidad;
+
 public:
-    PokemonVeneno(): Pokemon(), ataqueEspecial("Intoxicacion"), toxicidad(3) {}
-    PokemonVeneno(string nombre, string color, int ataque, int vida, int xp, int nivel):  Pokemon(nombre, color, ataque, vida, xp, nivel),  ataqueEspecial("Intoxicacion"), toxicidad(3) {}
-    string getAtaqueEspecial()const override {return ataqueEspecial;}
-    int getToxicidad() const {return toxicidad;}
-    void hacerGritoDeAsalto() override {
+    PokemonVeneno() : Pokemon(), ataqueEspecial("Intoxicacion"), toxicidad(3) {}
+    PokemonVeneno(string nombre, string color, int ataque, int vida, int xp, int nivel) : Pokemon(nombre, color, ataque, vida, xp, nivel), ataqueEspecial("Intoxicacion"), toxicidad(3) {}
+    string getAtaqueEspecial() const override { return ataqueEspecial; }
+    int getToxicidad() const { return toxicidad; }
+    void hacerGritoDeAsalto() override
+    {
         Pokemon::hacerGritoDeAsalto();
-        cout << "Tssssss Splashhh BOOOM!!"<< endl;
+        cout << "Tssssss Splashhh BOOOM!!" << endl;
     }
-    void aumentarToxicidad(int plus) {
+    void aumentarToxicidad(int plus)
+    {
         toxicidad += plus;
     }
 };
 
-class PokemonAcero: public Pokemon {
+class PokemonAcero : public Pokemon
+{
 private:
     string ataqueEspecial;
     int escudoAcero;
+
 public:
-    PokemonAcero(): Pokemon(), ataqueEspecial("Escudo de acero"), escudoAcero(100) {}
-    PokemonAcero(string nombre, string color, int ataque, int vida, int xp, int nivel):  Pokemon(nombre, color, ataque, vida, xp, nivel),  ataqueEspecial("Escudo de acero"), escudoAcero(100) {}
-    string getAtaqueEspecial()const override {return ataqueEspecial;}
-    int getEscudoAcero() const {return escudoAcero;}
-    void hacerGritoDeAsalto() override {
+    PokemonAcero() : Pokemon(), ataqueEspecial("Escudo de acero"), escudoAcero(100) {}
+    PokemonAcero(string nombre, string color, int ataque, int vida, int xp, int nivel) : Pokemon(nombre, color, ataque, vida, xp, nivel), ataqueEspecial("Escudo de acero"), escudoAcero(100) {}
+    string getAtaqueEspecial() const override { return ataqueEspecial; }
+    int getEscudoAcero() const { return escudoAcero; }
+    void hacerGritoDeAsalto() override
+    {
         Pokemon::hacerGritoDeAsalto();
-        cout << "TSK TSK escudo activado!! "<< endl;
+        cout << "TSK TSK escudo activado!! " << endl;
     }
-    void desgastarEscudo(int desgaste) {
+    void desgastarEscudo(int desgaste)
+    {
         escudoAcero -= desgaste;
     }
 };
@@ -189,13 +186,13 @@ public:
 class Entrenador
 {
 private:
-    vector<Pokemon*> misPokemones; // aunque debe ser 3, eso se maneja en la excepción
+    vector<Pokemon *> misPokemones; // aunque debe ser 3, eso se maneja en la excepción
     string nombre;
     int nivel;
 
 public:
     Entrenador() : nombre(""), nivel(1) {}
-    Entrenador(const string& nombre, const vector<Pokemon*>& pokemones): nombre(nombre), misPokemones(pokemones) {}
+    Entrenador(const string &nombre, const vector<Pokemon *> &pokemones) : nombre(nombre), misPokemones(pokemones), nivel(1) {}
     string getNombre() const { return nombre; }
     int getNivel() const { return nivel; }
     void setNombre(string nombre) { this->nombre = nombre; }
@@ -222,60 +219,38 @@ public:
         }
     }
 
-    void entrenar(Pokemon *miPok, const Pokemon *oponente)
+    void entrenar(Pokemon *poke)
     { // X: &
-        miPok->setXp(miPok->getXp() + oponente->getNivel() * nivel);
-        cout << "El entrenador " << nombre << " ha entrenado a " << miPok->getNombre() << endl;
-        if (miPok->verificarAumentoNivel())
-        {
-            string nombre, color;
-            // Cambiar mensajes
-            cout << "¡Enhorabuena, has subido de nivel!!\nPuedes cambiar el nombre y color de tu Pokémon. Además, la potencia de ataque se aumentó un 20%\n";
-            cout << "Nuevo nombre:\n";
-            cin >> nombre;
-            cout << "Nuevo color:\n";
-            cin >> color;
-            miPok->aumentarNivel();
-            miPok->evolucionar(nombre, color);
-            aumentarNivel();
-        }
-        cout << miPok;
+        poke->setXp(poke->getXp() + 25 * getNivel());
+        cout << "El entrenador " << nombre << " ha entrenado a " << poke->getNombre() << endl;
+        cout << poke;
     }
 
-    void mostrarPokemones() {
-        for (const auto &poke : misPokemones){
+    void mostrarPokemones()
+    {
+        for (const auto &poke : misPokemones)
+        {
             cout << poke << " " << endl;
         }
     }
 
-
     void aumentarNivel()
     {
         setNivel(getNivel() + 1);
+        cout << getNombre() << " aumento su nivel a " << getNivel() << endl;
     }
     // const despues de parentesis
-    bool operator==(const Entrenador *ec) const
-    {
-        if (nombre != ec->nombre || nivel != ec->nivel)
-            return false;
-        if (misPokemones.size() != ec->misPokemones.size())
-            return false;
-        for (int i = 0; i < misPokemones.size(); ++i)
-        {
-            if (!(misPokemones[i] == ec->misPokemones[i]))
-                return false;
-        }
-        return true;
-    }
+
     friend ostream &operator<<(ostream &o, Entrenador *c);
 };
 ostream &operator<<(ostream &o, Entrenador *c)
 {
     //    return o << "\nNombre: " << p->getNombre() << " \n color: " << p->getColor() << "\n ataque: " << p->getAtaque() << "\n vida " << p->getVida() << " \n experiencia: " << p->getXp() << "\n nivel: "
     // << p->getNivel() << "\n ataque especial: " << p->getAtaqueEspecial() << endl;
-    return o << "Entrenador: " << c->getNombre() << endl << "Nivel:  " << c->getNivel() << endl;
+    return o << "Entrenador: " << c->getNombre() << endl
+             << "Nivel:  " << c->getNivel() << endl;
 }
-////system("cls");
+// system("cls");
 class Batalla
 {
 private:
@@ -313,7 +288,7 @@ public:
 
     void luchar(Pokemon *miPok, Pokemon *oponente, bool &ganador)
     {
-        int vidaOponente, vidaMiPok, ataqueMiPok, ataqueOponente, nivelMipok, nivelOponente, xpMiPok, xpOponente, ronda = 1, atq = 0, atqO=0;
+        int vidaOponente, vidaMiPok, ataqueMiPok, ataqueOponente, nivelMipok, nivelOponente, xpMiPok, xpOponente, ronda = 1, atq = 0, atqO = 0;
         char sig;
         vidaOponente = oponente->getVida();
         vidaMiPok = miPok->getVida();
@@ -332,80 +307,89 @@ public:
         {
             srand(static_cast<unsigned>(time(0)));
 
-            //comento esto para probar siempre con variablealeatoria1 solo para probar el programa mas facil
-            int variableAleatoria=rand()%5+1;
-            //int variableAleatoria=1;
-            bool congeladoverop =false;
-            bool congeladovermi =false;
+            // comento esto para probar siempre con variablealeatoria1 solo para probar el programa mas facil
+            int variableAleatoria = rand() % 2 + 1;
+            // variableAleatoria=1;
+            bool congeladoverop = false;
+            bool congeladovermi = false;
             int restOp, restMi;
-            int dañoTotalOponente = 0, dañoTotalMiPok=0; //dañoTotal para extraer la informacion deel daño que hizo el pokemon luego del ataque cualquiera que sea
+            int dañoTotalOponente = 0, dañoTotalMiPok = 0; // dañoTotal para extraer la informacion deel daño que hizo el pokemon luego del ataque cualquiera que sea
             char sig, tipoAtaque;
             dañoTotalOponente = ataqueOponente;
             dañoTotalMiPok = ataqueMiPok;
 
             cout << "Presiona (x) para lanzar un ataque normal o (p) para un ataque especial." << endl;
             cout << "Solo tienes una oportunidad para lanzar el ataque especial" << endl;
-            cout << "\n\n{,.-}{,.-}{,.-}{,.-}{,.-}{,.-}{,.-}{,.-}{,.-}{,.-}{,.-} RONDA " << ronda <<" {,.-}{,.-}{,.-}{,.-}{,.-}{,.-}{,.-}{,.-}{,.-}{,.-}{,.-}"<< endl; // Inicia ronda
-            cout<<endl;
-            //esto es para confirmar si si sirvio la variable aleatoria
-            cout<<"variable aletoria : "<< variableAleatoria<<endl;
-            if( atq==0 || atq>1 ) { //atq>1 para confirmar si ya se usó el especial y si es asi, mandar solo normales ahora
+            cout << "\n\n{,.-}{,.-}{,.-}{,.-}{,.-}{,.-}{,.-}{,.-}{,.-}{,.-}{,.-} RONDA " << ronda << " {,.-}{,.-}{,.-}{,.-}{,.-}{,.-}{,.-}{,.-}{,.-}{,.-}{,.-}" << endl; // Inicia ronda
+            cout << endl;
+            // esto es para confirmar si si sirvio la variable aleatoria
+            cout << "variable aletoria : " << variableAleatoria << endl;
+            if (atq == 0 || atq > 1)
+            { // atq>1 para confirmar si ya se usó el especial y si es asi, mandar solo normales ahora
                 vidaMiPok -= dañoTotalOponente;
                 setRegistroDaño(getRegistroDaño() + ataqueOponente);
             }
-            else if (atq==1 && miPok->getAtaqueEspecial()=="Congelamiento")
+            else if (atq == 1 && miPok->getAtaqueEspecial() == "Congelamiento")
             {
                 dañoTotalOponente = 0;
                 cout << oponente->getNombre() << " esta congelado!!!! " << endl;
                 atq++;
-                congeladoverop=true;
+                congeladoverop = true;
             }
-            else if (atq==1 && miPok->getAtaqueEspecial()=="Intoxicacion")
+            else if (atq == 1 && miPok->getAtaqueEspecial() == "Intoxicacion")
             {
                 cout << oponente->getNombre() << " esta intoxicado y el veneno empeora! D: " << endl;
-                cout << vidaOponente << " - " << dynamic_cast<PokemonVeneno*>(miPok)->getToxicidad() <<" = ";
+                cout << vidaOponente << " - " << dynamic_cast<PokemonVeneno *>(miPok)->getToxicidad() << " = ";
                 vidaMiPok -= dañoTotalOponente;
-                vidaOponente -= dynamic_cast<PokemonVeneno*>(miPok)->getToxicidad();
-                cout<<vidaOponente<<endl;
-                setRegistroDaño(getRegistroDaño() + ataqueOponente + dynamic_cast<PokemonVeneno*>(miPok)->getToxicidad());
-                dynamic_cast<PokemonVeneno*>(miPok)->aumentarToxicidad(3);
+                vidaOponente -= dynamic_cast<PokemonVeneno *>(miPok)->getToxicidad();
+                cout << vidaOponente << endl;
+                setRegistroDaño(getRegistroDaño() + ataqueOponente + dynamic_cast<PokemonVeneno *>(miPok)->getToxicidad());
+                dynamic_cast<PokemonVeneno *>(miPok)->aumentarToxicidad(3);
             }
-            else if(atq==1 && miPok->getAtaqueEspecial()=="Escudo de acero" && dynamic_cast<PokemonAcero*>(miPok)->getEscudoAcero()>0)
+            else if (atq == 1 && miPok->getAtaqueEspecial() == "Escudo de acero" && dynamic_cast<PokemonAcero *>(miPok)->getEscudoAcero() > 0)
             {
-                dynamic_cast<PokemonAcero*>(miPok)->desgastarEscudo(ataqueOponente*0.2);
-                vidaMiPok -= (ataqueOponente - ataqueOponente*0.2);
+                dynamic_cast<PokemonAcero *>(miPok)->desgastarEscudo(ataqueOponente * 0.2);
+                vidaMiPok -= (ataqueOponente - ataqueOponente * 0.2);
             }
             cout << "\n**************************************************************\n";
-            if(congeladoverop){
-                cout<<oponente->getNombre()<< "esta descongelandose... preparate! " <<endl;
-            }else{
-                //si la variable es 1, usa su ataque especial, aqui solo muestra al usuario que la usó
-                if(variableAleatoria==1 && atqO==0){
-                    //aqui le cambio el valor para que el programa siga, si no hago eso pailas jaja Rojo
-                    //ES MIENTRAS PRUEBO
-                    variableAleatoria++;
+            if (congeladoverop)
+            {
+                cout << oponente->getNombre() << "esta descongelandose... preparate! " << endl;
+            }
+            else
+            {
+                // si la variable es 1, usa su ataque especial, aqui solo muestra al usuario que la usó
+                if (variableAleatoria == 1 && atqO == 0)
+                {
+                    // aqui le cambio el valor para que el programa siga, si no hago eso pailas jaja Rojo
+                    // ES MIENTRAS PRUEBO
+                    // variableAleatoria++;
                     atqO++;
-                    if(atqO==1){
-                        cout<<oponente->getNombre()<<" Ha usado su ataque especial:";
-                        if(oponente->getAtaqueEspecial()=="Congelamiento"){
-                            cout<<" Congelamiento!! : ";
-                            oponente->hacerGritoDeAsalto();
-                        }else if(oponente->getAtaqueEspecial()=="Intoxicacion"){
-                            cout<<" Intoxicacion!! : ";
-                            oponente->hacerGritoDeAsalto();
-                            cout <<"Vida de " << miPok->getNombre() << ": " << vidaMiPok + dañoTotalOponente << " - " << dañoTotalOponente << " ->  " << vidaMiPok << endl;
-
-                        }else{
-                            cout<<" Escudo de Acero!! : ";
+                    if (atqO == 1)
+                    {
+                        cout << oponente->getNombre() << " Ha usado su ataque especial:";
+                        if (oponente->getAtaqueEspecial() == "Congelamiento")
+                        {
+                            cout << " Congelamiento!! : ";
                             oponente->hacerGritoDeAsalto();
                         }
-
+                        else if (oponente->getAtaqueEspecial() == "Intoxicacion")
+                        {
+                            cout << " Intoxicacion!! : ";
+                            oponente->hacerGritoDeAsalto();
+                            cout << "Vida de " << miPok->getNombre() << ": " << vidaMiPok + dañoTotalOponente << " - " << dañoTotalOponente << " ->  " << vidaMiPok << endl;
+                        }
+                        else
+                        {
+                            cout << " Escudo de Acero!! : ";
+                            oponente->hacerGritoDeAsalto();
+                        }
                     }
-
-                }else if(variableAleatoria != 1){
+                }
+                else if (variableAleatoria != 1)
+                {
                     cout << oponente->getNombre() << " ha atacado " << endl;
-                    cout <<"Vida de " << miPok->getNombre() << ": " << vidaMiPok + dañoTotalOponente << " - " << dañoTotalOponente << " ->  " << vidaMiPok << endl;
-
+                    cout << "Vida de " << miPok->getNombre() << ": " << vidaMiPok + dañoTotalOponente << " - " << dañoTotalOponente << " ->  " << vidaMiPok << endl;
                 }
                 cout << "\n**************************************************************\n\n";
             }
@@ -423,123 +407,130 @@ public:
             {
                 try
                 {
-                    cout << "Ataca!!" << endl;
-                    cin >> tipoAtaque;
-                    if (tipoAtaque == 'x' && variableAleatoria==1)
+                    if (variableAleatoria == 1 && atqO == 1 && oponente->getAtaqueEspecial() == "Intoxicacion")
                     {
-                        //variableAleatoria=2;
-                        if(oponente->getAtaqueEspecial()=="Congelamiento" && atqO==1){
+
+                        cout << miPok->getNombre() << " esta intoxicado y el veneno empeora! NOOOO " << endl;
+                        cout << vidaMiPok << " - " << dynamic_cast<PokemonVeneno *>(oponente)->getToxicidad() << " = ";
+                        // vidaOponente -= dañoTotalMiPok;
+                        vidaMiPok -= dynamic_cast<PokemonVeneno *>(oponente)->getToxicidad();
+                        cout << vidaMiPok << endl;
+                        setRegistroDaño(getRegistroDaño() + ataqueMiPok + dynamic_cast<PokemonVeneno *>(oponente)->getToxicidad());
+                        dynamic_cast<PokemonVeneno *>(oponente)->aumentarToxicidad(3);
+                    }
+                    // Verifica si el pokemon sigue vivo, porque pudo haber muerto por intoxicacion
+                    // IMPORTANTE
+                    // Antes estaba despues de que se le solicitara al usuario atacar, y si moria mor intoxicacion no atacaba,
+                    // asi que no tenia sentido
+                    if (vidaMiPok <= 0)
+                    {
+                        vidaMiPok = 0;
+                        ganador = false; // Establece ganador
+                        break;
+                    }
+                    else
+                    {
+                        cout << "Ataca!!" << endl;
+                        cin >> tipoAtaque;
+                    }
+                    if (tipoAtaque == 'x' && variableAleatoria == 1)
+                    {
+                        // variableAleatoria=2;
+                        if (oponente->getAtaqueEspecial() == "Congelamiento" && atqO == 1)
+                        {
                             dañoTotalMiPok = 0;
                             cout << miPok->getNombre() << " esta congelado!!!! " << endl;
                             atqO++;
-                            congeladovermi=true;
-
-                        }else if( atqO==1 && oponente->getAtaqueEspecial()=="Intoxicacion")
+                            congeladovermi = true;
+                        }
+                        else if (oponente->getAtaqueEspecial() == "Escudo de Acero" && dynamic_cast<PokemonAcero *>(oponente)->getEscudoAcero() > 0)
                         {
-
-                            cout << miPok->getNombre() << " esta intoxicado y el veneno empeora! NOOOO " << endl;
-                            cout << vidaMiPok << " - " << dynamic_cast<PokemonVeneno*>(oponente)->getToxicidad() <<" = ";
-                            //vidaOponente -= dañoTotalMiPok;
-                            vidaMiPok -= dynamic_cast<PokemonVeneno*>(oponente)->getToxicidad();
-                            //verificar si mi pokemon murio con el veneno
-                            cout<<vidaMiPok<<endl;
-                            if (vidaMiPok <= 0)
-                            {
-                                vidaMiPok = 0;
-                                ganador = false; // Establece ganador
-                                break;
-                            }
-
-                            setRegistroDaño(getRegistroDaño() + ataqueMiPok + dynamic_cast<PokemonVeneno*>(oponente)->getToxicidad());
-                            dynamic_cast<PokemonVeneno*>(oponente)->aumentarToxicidad(3);
-                        }else if(oponente->getAtaqueEspecial()=="Escudo de Acero" &&  dynamic_cast<PokemonAcero*>(oponente)->getEscudoAcero()>0)
-                        {
-                            dynamic_cast<PokemonAcero*>(oponente)->desgastarEscudo(ataqueMiPok*0.2);
-                            vidaOponente -= (ataqueMiPok - ataqueMiPok*0.2);
-                            setRegistroDaño(getRegistroDaño() + ataqueMiPok - ataqueMiPok*0.2);
-
+                            dynamic_cast<PokemonAcero *>(oponente)->desgastarEscudo(ataqueMiPok * 0.2);
+                            vidaOponente -= (ataqueMiPok - ataqueMiPok * 0.2);
+                            setRegistroDaño(getRegistroDaño() + ataqueMiPok - ataqueMiPok * 0.2);
                         }
                         cout << "\n**************************************************************\n";
-                        if(congeladovermi){
-                            cout<<miPok->getNombre()<< " esta descongelandose... " <<endl;
-                        }else{
+                        if (congeladovermi)
+                        {
+                            cout << miPok->getNombre() << " esta descongelandose... " << endl;
+                        }
+                        else
+                        {
                             vidaOponente -= ataqueMiPok;
                             setRegistroDaño(getRegistroDaño() + ataqueMiPok);
                             cond = false;
                         }
-
-                    }else if(tipoAtaque == 'x'){
-                        cout<<"vida oponente antes de atacarlo: "<<vidaOponente<<endl;
+                    }
+                    else if (tipoAtaque == 'x')
+                    {
+                        cout << "vida oponente antes de atacarlo: " << vidaOponente << endl;
                         vidaOponente -= ataqueMiPok;
                         setRegistroDaño(getRegistroDaño() + ataqueMiPok);
                         cond = false;
                     }
 
-                        //ataque especial de nuestro pokemon
-                    else if (atq == 0 && tipoAtaque == 'p' && variableAleatoria==1)
+                    // ataque especial de nuestro pokemon
+                    else if (atq == 0 && tipoAtaque == 'p' && variableAleatoria == 1)
                     {
-                        variableAleatoria=2;
+                        variableAleatoria = 2;
 
-                        if(oponente->getAtaqueEspecial()=="Congelamiento" && atqO==1){
+                        if (oponente->getAtaqueEspecial() == "Congelamiento" && atqO == 1)
+                        {
                             dañoTotalMiPok = 0;
                             cout << miPok->getNombre() << " esta congelado!!!! " << endl;
                             atqO++;
-                            congeladovermi=true;
-
-                        }else if( atqO==1 && oponente->getAtaqueEspecial()=="Intoxicacion")
-                        {
-
-                            cout << miPok->getNombre() << " esta intoxicado y el veneno empeora! NOOOO " << endl;
-                            cout << vidaMiPok << " - " << dynamic_cast<PokemonVeneno*>(oponente)->getToxicidad() <<" = ";
-                            //vidaOponente -= dañoTotalMiPok;
-                            vidaMiPok -= dynamic_cast<PokemonVeneno*>(oponente)->getToxicidad();
-                            cout<<vidaMiPok<<endl;
-                            //verifica si mi pokemon murio con el veneno
-                            if (vidaMiPok <= 0)
-                            {
-                                vidaMiPok = 0;
-                                ganador = false; // Establece ganador
-                                break;
-                            }
-
-                            setRegistroDaño(getRegistroDaño() + ataqueMiPok + dynamic_cast<PokemonVeneno*>(oponente)->getToxicidad());
-                            dynamic_cast<PokemonVeneno*>(oponente)->aumentarToxicidad(3);
-                        }else if(oponente->getAtaqueEspecial()=="Escudo de Acero" &&  dynamic_cast<PokemonAcero*>(oponente)->getEscudoAcero()>0)
+                            congeladovermi = true;
+                        }
+                        else if (oponente->getAtaqueEspecial() == "Escudo de Acero" && dynamic_cast<PokemonAcero *>(oponente)->getEscudoAcero() > 0)
                         {
                             dañoTotalMiPok = ataqueMiPok + ataqueMiPok * .4;
-                            dynamic_cast<PokemonAcero*>(oponente)->desgastarEscudo((ataqueMiPok + ataqueMiPok * .4)*0.2);
-                            vidaOponente -= ((ataqueMiPok + ataqueMiPok * .4) - (ataqueMiPok + ataqueMiPok * .4)*0.2);
-                            setRegistroDaño(getRegistroDaño() + (ataqueMiPok + ataqueMiPok * .4) - ((ataqueMiPok + ataqueMiPok * .4)*0.2));
-
+                            dynamic_cast<PokemonAcero *>(oponente)->desgastarEscudo((ataqueMiPok + ataqueMiPok * .4) * 0.2);
+                            vidaOponente -= ((ataqueMiPok + ataqueMiPok * .4) - (ataqueMiPok + ataqueMiPok * .4) * 0.2);
+                            setRegistroDaño(getRegistroDaño() + (ataqueMiPok + ataqueMiPok * .4) - ((ataqueMiPok + ataqueMiPok * .4) * 0.2));
                         }
-                        if(congeladovermi){
-                            cout<<miPok->getNombre()<< " esta descongelandose... " <<endl;
-                        }else{
+                        if (congeladovermi)
+                        {
+                            cout << miPok->getNombre() << " esta descongelandose... " << endl;
+                        }
+                        else
+                        {
 
                             dañoTotalMiPok = ataqueMiPok + ataqueMiPok * .4;
                             vidaOponente -= dañoTotalMiPok;
                             setRegistroDaño(getRegistroDaño() + dañoTotalMiPok);
                             atq++;
-                            //Aplicamos funcion virtual
-                            cout<<miPok->getNombre()<<" Ha usado su ataque especial:";
-                            if(miPok->getAtaqueEspecial()=="Congelamiento"){
-                                cout<<" Congelamiento!! : ";
-                            }else if(miPok->getAtaqueEspecial()=="Intoxicacion"){
-                                cout<<" Intoxicacion!! : ";
-                            }else{
-                                cout<<" Escudo de Acero!! : ";
+                            // Aplicamos funcion virtual
+                            cout << miPok->getNombre() << " Ha usado su ataque especial:";
+                            if (miPok->getAtaqueEspecial() == "Congelamiento")
+                            {
+                                cout << " Congelamiento!! : ";
+                            }
+                            else if (miPok->getAtaqueEspecial() == "Intoxicacion")
+                            {
+                                cout << " Intoxicacion!! : ";
+                            }
+                            else
+                            {
+                                cout << " Escudo de Acero!! : ";
                             }
                             miPok->hacerGritoDeAsalto();
                             cond = false;
-                        }}
-                    else if(atq==0 && tipoAtaque == 'p' && variableAleatoria !=1){
-                        cout<<miPok->getNombre()<<" Ha usado su ataque especial:";
-                        if(miPok->getAtaqueEspecial()=="Congelamiento"){
-                            cout<<" Congelamiento!! : ";
-                        }else if(miPok->getAtaqueEspecial()=="Intoxicacion"){
-                            cout<<" Intoxicacion!! : ";
-                        }else{
-                            cout<<" Escudo de Acero!! : ";
+                        }
+                    }
+                    else if (atq == 0 && tipoAtaque == 'p' && variableAleatoria != 1)
+                    {
+                        cout << miPok->getNombre() << " Ha usado su ataque especial:";
+                        if (miPok->getAtaqueEspecial() == "Congelamiento")
+                        {
+                            cout << " Congelamiento!! : ";
+                        }
+                        else if (miPok->getAtaqueEspecial() == "Intoxicacion")
+                        {
+                            cout << " Intoxicacion!! : ";
+                        }
+                        else
+                        {
+                            cout << " Escudo de Acero!! : ";
                         }
                         miPok->hacerGritoDeAsalto();
                         cond = false;
@@ -565,15 +556,21 @@ public:
                     // continue;
                 }
             } while (cond);
-            cout << "\n**************************************************************\n";
-            cout << miPok->getNombre() << " ha atacado " << endl;
-            cout << oponente->getNombre() << ": Vida: " << vidaOponente + dañoTotalMiPok << " - " << dañoTotalMiPok << " ->  " << vidaOponente << endl;
-            cout << "\n**************************************************************\n\n";
-
+            if (vidaMiPok > 0)
+            {
+                cout << "\n**************************************************************\n";
+                cout << miPok->getNombre() << " ha atacado " << endl;
+                cout << oponente->getNombre() << ": Vida: " << vidaOponente + dañoTotalMiPok << " - " << dañoTotalMiPok << " ->  " << vidaOponente << endl;
+                cout << "\n**************************************************************\n\n";
+            }
+            else
+            {
+                cout << miPok->getNombre() << " ha muerto en batalla " << endl;
+            }
             cout << endl;
             cout << "                    Resultado ronda " << ronda << endl;
-            cout <<"(Tu)->      || " << miPok->getNombre() << ": Vida: " << vidaMiPok<<endl;
-            cout <<"(Oponente)->|| " << oponente->getNombre() << ": Vida: " << vidaOponente << endl;
+            cout << "(Tu)->      || " << miPok->getNombre() << ": Vida: " << vidaMiPok << endl;
+            cout << "(Oponente)->|| " << oponente->getNombre() << ": Vida: " << vidaOponente << endl;
             cout << "\n\n**************************************************************\n\n";
             do
             {
@@ -613,367 +610,236 @@ int main()
     Pokemon *bulbasaur = new PokemonAcero("Bulbasaur", "Rojo", 12, 100, 0, 1);
 
     // Crear Pokemones para el segundo entrenador
-    Pokemon *pidgey = new PokemonVeneno("Pidgey", "Violeta", 30, 100, 0, 1);
     Pokemon *squirtle = new PokemonHielo("Squirtle", "Azul", 28, 100, 0, 1);
+    Pokemon *pidgey = new PokemonVeneno("Pidgey", "Violeta", 30, 100, 0, 1);
     Pokemon *rattata = new PokemonAcero("Rattata", "Naranja", 16, 100, 0, 1);
 
     // Crear entrenadores
-    vector<Pokemon*> pokemonesAsh = {charmander, pikachu, bulbasaur};
-    Entrenador* ash = new Entrenador("Ash", pokemonesAsh);
+    vector<Pokemon *> pokemonesAsh = {charmander, pikachu, bulbasaur};
+    Entrenador *ash = new Entrenador("Ash", pokemonesAsh);
 
-    vector<Pokemon*> pokemonesMisty = {pidgey,squirtle, rattata};
-    Entrenador* misty = new Entrenador("Misty", pokemonesMisty);
+    vector<Pokemon *> pokemonesMisty = {pidgey, squirtle, rattata};
+    Entrenador *misty = new Entrenador("Misty", pokemonesMisty);
 
     // Agregar entrenadores al vector
     entrenadores.push_back(ash);
     entrenadores.push_back(misty);
 
-    while(op!=9)
+    while (op != 6)
     {
-        //system("cls");
+        // system("cls");
         cout << "1) Agregar entrenadores" << endl;
-        cout << "2) Combatir" << endl;
-        cout << "3) Analizar entrenador" << endl;
-        cout << "4) Crear pokemon recargado" << endl;
-        cout << "5) Agregar pokemon a entrenador" << endl;
-        cout << "6) Comparar" << endl;
-        cout << "7) Historial" << endl;
-        cout << "8) Salir" << endl;
+        cout << "2) Agregar pokemon a entrenador" << endl;
+        cout << "3) Combatir" << endl;
+        cout << "4) Analizar entrenador" << endl;
+        cout << "5) Historial" << endl;
+        cout << "6) Salir" << endl;
         cin >> op;
 
         switch (op)
         {
-            case 1:
+        case 1:
+        {
+            int i = 0;
+            int cantidadEntrenadores;
+            cantidadEntrenadores = entrenadores.size();
+            // system("cls");
+            cout << "Crea los entrenadores: " << endl;
+            cond = "Si";
+            while (cond == "Si" || cond == "si")
             {
-                //system("cls");
-                cout << "Crea los entrenadores: " << endl;
-                while (cond == "Si" || cond == "si")
+                Entrenador *papuN = new Entrenador;
+                string nombre, condPok = "Si";
+                int nivel, vida, potAtaque, i = 0;
+
+                cout << "Dale un nombre al entrenador: " << endl;
+                cin >> nombre;
+                papuN->setNombre(nombre);
+
+                entrenadores.push_back(papuN);
+
+                cout << "Entrenador añadido: " << entrenadores[cantidadEntrenadores]->getNombre() << endl;
+                cout << "Deseas agregar otro entrenador? (Si/no)" << endl;
+                cin >> cond;
+                i++;
+            }
+            cond = "";
+            // system("cls");
+            /* cout << "Entrenadores disponibles: " << endl;
+           for (int i = 0; i < entrenadores.size(); i++)
+           {
+               cout << i + 1 << ") " << entrenadores[i]->getNombre() << endl;
+           } */
+            break;
+        }
+        case 2:
+        {
+            int op, i = 0;
+            string condPok = "si";
+            for (int i = 0; i < entrenadores.size(); i++)
+            {
+                cout << i + 1 << ") " << entrenadores[i] << endl;
+            }
+
+            cout << "Elige un entrenador para añadir pokemones" << endl;
+            cin >> op;
+            while (condPok == "si" || condPok == "Si")
+            {
+                try
                 {
-                    Entrenador *papuN = new Entrenador;
-                    string nombre, condPok = "Si";
-                    int nivel, vida, potAtaque, i = 0;
+                    if (entrenadores[op - 1]->getCantidadPokemones() == 3)
+                    {
+                        throw Epersonalizado("Error al agregar el pokemon", "El limite son 3 pokemones");
+                    }
 
-                    cout << "Dale un nombre al entrenador: " << endl;
-                    cin >> nombre;
-                    papuN->setNombre(nombre);
+                    int vida, potAtaque, tipoPoke;
+                    string nombrePok, colorPok; // no ataqueEspecial
 
-                    entrenadores.push_back(papuN);
+                    cout << "Que tipo de pokemon quieres elegir? " << endl;
+                    cout << "1. Hielo" << endl;
+                    cout << "2. Veneno" << endl;
+                    cout << "3. Acero" << endl;
+                    cin >> tipoPoke;
 
-                    cout << "Deseas agregar otro entrenador? (Si/no)" << endl;
-                    cin >> cond;
+                    Pokemon *poki; // Pienso
+                    if (tipoPoke == 1)
+                    { // Luego existo
+                        poki = new PokemonHielo;
+                    }
+                    else if (tipoPoke == 2)
+                    {
+                        poki = new PokemonVeneno;
+                    }
+                    else if (tipoPoke == 3)
+                    {
+                        poki = new PokemonAcero;
+                    }
+
+                    cout << "Nombre del Pokemon " << i + 1 << ":" << endl;
+                    cin >> nombrePok;
+                    poki->setNombre(nombrePok);
+
+                    cout << "Color de " << poki->getNombre() << ":" << endl;
+                    cin >> colorPok;
+                    poki->setColor(colorPok);
+
+                    cout << "Vida de " << poki->getNombre() << ":" << endl;
+                    cout << "Desde 70 a 100" << endl;
+                    vida = ingresaPorRango(70, 100);
+                    poki->setVida(vida);
+
+                    cout << "Potencia de ataque de " << poki->getNombre() << ":" << endl;
+                    cout << "Desde 10 a 30" << endl;
+                    potAtaque = ingresaPorRango(10, 30);
+                    poki->setPotenciaDeAtaque(potAtaque);
+
+                    entrenadores[op - 1]->agregarpokemon(poki);
+
+                    cout << "Deseas agregar otro pokemon?" << endl;
+                    cin >> condPok;
+                    i++;
                 }
-                cond = "";
-                //system("cls");
-                /* cout << "Entrenadores disponibles: " << endl;
-               for (int i = 0; i < entrenadores.size(); i++)
-               {
-                   cout << i + 1 << ") " << entrenadores[i]->getNombre() << endl;
-               } */
-                break;
-            }
-            case 2:
-            {
-                //system("cls");
-                do
+                catch (const Epersonalizado &e)
                 {
-                    Batalla *game = new Batalla;
-                    for (int i = 0; i < entrenadores.size(); i++)
-                    {
-                        cout << "*************************************************************" << endl;
-                        cout <<  i + 1 << ") " << entrenadores[i] << endl;
-                        cout << "Pokemones: " << endl;
-                        entrenadores[i]->mostrarPokemones();
-                    }
-                    cout << "Selecciona tu entrenador " << endl;
-                    cin >> pro1;
-                    cout << "Selecciona tu adversario" << endl;
-                    cin >> pro2;
-
-                    if (pro1 != pro2)
-                    {
-                        game = lucharEntrenadores(entrenadores[pro1 - 1], entrenadores[pro2 - 1]);
-
-                        batallas.push_back(game);
-                    }
-                    else
-                    {
-                        cout << "Elegiste al mismo, ahora no haces nada :(" << endl;
-                    }
-                    cout << "Quieres volvera jugar? " << endl;
-                    cin >> cond;
-                    // Agregar excepcion aquí por si el usuario ingresa un valor que no sea si o no
-                } while (cond == "si");
-                break;
+                    string x;
+                    cerr << e.what() << endl;
+                    cout << "presu¿iona una tecla y enter para aceptar" << endl;
+                    cin >> x;
+                    break;
+                }
             }
-            case 3:
+            break;
+        }
+        case 3:
+        {
+            // system("cls");
+            do
             {
-
-                cout << "Que entrenador desea analizar? " << endl;
-                cout << "Entrenadores disponibles: " << endl;
-
+                Batalla *game = new Batalla;
                 for (int i = 0; i < entrenadores.size(); i++)
                 {
-                    cout << i + 1 << ") " << entrenadores[i]->getNombre() << endl;
-                }
-                int openanalizar;
-                cin >> openanalizar;
-                // excepcion que suelte error si escoge algo distinto a 1 2 o 3
-                if (openanalizar == 1 || openanalizar == 2 || openanalizar == 3)
-                {
-                    cout << entrenadores[openanalizar - 1] << endl;
-                }
-                break;
-            }
-
-            case 4:
-            {
-                //system("cls");
-                cout << "primero elige el entrenador para asi acceder a sus pokemones" << endl;
-
-                for (int i = 0; i < entrenadores.size(); i++)
-                {
-                    cout << "1) " << entrenadores[i]->getNombre()<< endl;
-                }
-                int pepitoperez = 0;
-                cout << "que entrenador escoges:" << endl;
-
-                cin >> pepitoperez;
-                cout << "a continuacion te muestro la hoja de vida del entrenador: " << endl;
-                cout << entrenadores[pepitoperez - 1] << endl;
-                cout << endl;
-                int pac1 = 0;
-                for (int i = 0; i <3; i++)
-                {
-                    cout << "1) " << entrenadores[pepitoperez]->getPokemon(i)<< endl;
-                }
-                cout << "elige el primer pokemon a combinar" << endl;
-
-                cin >> pac1;
-
-                int pac2 = 0;
-                cout << "elige el segundo" << endl;
-
-                cin >> pac2;
-                // aplicacion de la sobrecarga del operador + (creando el pokemon recargado)
-                cout << "se esta creando el pokemon..." << endl;
-                //Pokemon *pokemonrecargado = entrenadores[pepitoperez - 1]->getPokemon(pac1 - 1) + entrenadores[pepitoperez - 1]->getPokemon(pac2 - 1);
-                cout << "Pokemon recargado creado!! datos a continuacion: " << endl;
-                //cout << pokemonrecargado;
-                break;
-            }
-            case 5:
-            {
-                int op, i = 0;
-                string condPok = "si";
-                for (int i = 0; i < entrenadores.size(); i++)
-                {
+                    cout << "*************************************************************" << endl;
                     cout << i + 1 << ") " << entrenadores[i] << endl;
+                    cout << "Pokemones: " << endl;
+                    entrenadores[i]->mostrarPokemones();
                 }
+                cout << "Selecciona tu entrenador " << endl;
+                cin >> pro1;
+                cout << "Selecciona tu adversario" << endl;
+                cin >> pro2;
 
-                cout << "Elige un entrenador para añadir pokemones" << endl;
-                cin >> op;
-                while (condPok == "si" || condPok == "Si")
+                if (pro1 != pro2)
                 {
-                    try
-                    {
-                        if (i > 0 && i < entrenadores[op - 1]->getCantidadPokemones())
-                        {
-                            //system("cls");
-                        }
-                        else if (i == entrenadores[op]->getCantidadPokemones())
-                        {
-                            throw Epersonalizado("Error al agregar el pokemon", "El limite son 3 pokemones");
-                        }
+                    game = lucharEntrenadores(entrenadores[pro1 - 1], entrenadores[pro2 - 1]);
 
-                        int vida, potAtaque, tipoPoke;
-                        string nombrePok, colorPok; //no ataqueEspecial
-
-                        cout << "Que tipo de pokemon quieres elegir? " << endl;
-                        cout <<"1. Hielo" << endl;
-                        cout << "2. Veneno" << endl;
-                        cout << "3. Acero" << endl;
-                        cin >> tipoPoke;
-
-
-                        Pokemon *poki; //Pienso
-                        if(tipoPoke==1) { //Luego existo
-                            poki = new PokemonHielo;
-                        } else if(tipoPoke==2) {
-                            poki = new PokemonVeneno;
-                        } else if(tipoPoke==3) {
-                            poki = new PokemonAcero;
-                        }
-
-
-                        cout << "Nombre del Pokemon " << i + 1 << ":" << endl;
-                        cin >> nombrePok;
-                        poki->setNombre(nombrePok);
-
-                        cout << "Color de " << poki->getNombre() << ":" << endl;
-                        cin >> colorPok;
-                        poki->setColor(colorPok);
-
-                        cout << "Vida de " << poki->getNombre() << ":" << endl;
-                        cout << "Desde 70 a 100" << endl;
-                        vida = ingresaPorRango(70,100);
-                        poki->setVida(vida);
-
-                        cout << "Potencia de ataque de " << poki->getNombre() << ":" << endl;
-                        cout << "Desde 10 a 30" << endl;
-                        potAtaque = ingresaPorRango(10, 30);
-                        poki->setPotenciaDeAtaque(potAtaque);
-
-                        entrenadores[op - 1]->agregarpokemon(poki);
-
-                        cout << "Deseas agregar otro pokemon?" << endl;
-                        cin >> condPok;
-                        i++;
-                    }
-                    catch (const Epersonalizado &e)
-                    {
-                        cerr << e.what() << endl;
-                        break;
-                    }
-                }
-                break;
-            }
-            case 6:
-            {
-                //system("cls");
-                cout << "Deseas comparar dos entrenadores? o dos pokemones? 1)entrenadores 2)pokemones " << endl;
-                cin >> eop;
-                if (eop == 1)
-                {
-                    cout << "Que entrenadores desea comparar?" << endl;
-                    cout << "Entrenadores disponibles: " << endl;
-
-                    for (int i = 0; i < entrenadores.size(); i++)
-                    {
-                        cout << i + 1 << ") " << entrenadores[i]->getNombre() << endl;
-                    }
-                    int ecom;
-                    cout << "Entrenador a analizar 1: " << endl;
-                    cin >> ecom;
-                    int ecom2;
-                    cout << "Entrenador a analizar 2: " << endl;
-                    cin >> ecom2;
-
-                    if (entrenadores[ecom - 1] == entrenadores[ecom2 - 1])
-                    {
-                        cout << "Los entrenadores son iguales!" << endl;
-                    }
-                    else
-                    {
-                        cout << "Los entrenadores no son iguales!" << endl;
-                    }
+                    batallas.push_back(game);
                 }
                 else
                 {
-                    cout << "A que entrenador le deseas comparar sus pokemones?" << endl;
-                    cout << "Entrenadores disponibles: " << endl;
-
-                    for (int i = 0; i < entrenadores.size(); i++)
-                    {
-                        cout << i + 1 << ") " << entrenadores[i]->getNombre() << endl;
-                    }
-                    int ecompo;
-                    cin >> ecompo;
-                    cout << "Entrenador escogido: " << endl;
-                    cout << entrenadores[ecompo - 1] << endl;
-                    int pokecomparar1, pokecomparar2;
-                    cout << "Escoja 2 pokemones para comparar " << endl;
-                    cin >> pokecomparar1;
-                    cin >> pokecomparar2;
-
-                    if (entrenadores[ecompo - 1]->getPokemon(pokecomparar1 - 1)->getNombre() == entrenadores[ecompo - 1]->getPokemon(pokecomparar2 - 1)->getNombre())
-                    {
-                        cout << "Los pokemones se llaman igual!" << endl;
-                    }
-                    else
-                    {
-                        cout << "Los pokemones no se llaman igual " << endl;
-                    }
-
-                    if (entrenadores[ecompo - 1]->getPokemon(pokecomparar1 - 1)->getNivel() == entrenadores[ecompo - 1]->getPokemon(pokecomparar2)->getNivel())
-                    {
-                        cout << "Los pokemones tienen el mismo nivel!" << endl;
-                    }
-                    else
-                    {
-                        cout << "Los pokemones no tienen el mismo nivel" << endl;
-                    }
-
-                    if (entrenadores[ecompo - 1]->getPokemon(pokecomparar1 - 1)->getAtaque() == entrenadores[ecompo - 1]->getPokemon(pokecomparar2)->getAtaque())
-                    {
-                        cout << "Los pokemones tienen el mismo ataque!" << endl;
-                    }
-                    else
-                    {
-                        cout << "Los pokemones no tienen el mismo ataque!" << endl;
-                    }
-
-                    if (entrenadores[ecompo - 1]->getPokemon(pokecomparar1 - 1)->getVida() == entrenadores[ecompo - 1]->getPokemon(pokecomparar2)->getVida())
-                    {
-                        cout << "Los pokemones tienen la misma vida!" << endl;
-                    }
-                    else
-                    {
-                        cout << "Los pokemones no tienen la misma vida!" << endl;
-                    }
-
-                    if (entrenadores[ecompo - 1]->getPokemon(pokecomparar1 - 1)->getXp() == entrenadores[ecompo - 1]->getPokemon(pokecomparar2)->getXp())
-                    {
-                        cout << "Los pokemones tienen la misma experiencia!" << endl;
-                    }
-                    else
-                    {
-                        cout << "Los pokemones no tienen la misma experiencia!" << endl;
-                    }
-
-                    if (entrenadores[ecompo - 1]->getPokemon(pokecomparar1 - 1)->getColor() == entrenadores[ecompo - 1]->getPokemon(pokecomparar2)->getColor())
-                    {
-                        cout << "Los pokemones tienen el mismo color!" << endl;
-                    }
-                    else
-                    {
-                        cout << "Los pokemones no tienen el mismo color!" << endl;
-                    }
+                    cout << "Elegiste al mismo, ahora no haces nada :(" << endl;
                 }
-                break;
-            }
-            case 7:
+                cout << "Quieres volvera jugar? " << endl;
+                cin >> cond;
+                // Agregar excepcion aquí por si el usuario ingresa un valor que no sea si o no
+            } while (cond == "si");
+            break;
+        }
+        case 4:
+        {
+
+            cout << "Que entrenador desea analizar? " << endl;
+            cout << "Entrenadores disponibles: " << endl;
+
+            for (int i = 0; i < entrenadores.size(); i++)
             {
-                //system("cls");
-                cout << "Registro  de batallas" << endl;
-                for (int i = 0; i < batallas.size(); i++)
-                {
-                    cout << "Batalla " << i + 1 << endl;
-                    cout << batallas[i] << endl;
-                }
-                break;
+                cout << i + 1 << ") " << entrenadores[i]->getNombre() << endl;
             }
-            case 8:
-                //system("cls");
-                cout << "Fin del juego" << endl;
-                op++;
-                break;
-            default:
-                cout << "Opcion incorrecta, escoja otra" << endl;
-                break;
+            int openanalizar;
+            cin >> openanalizar;
+            // excepcion que suelte error si escoge algo distinto a 1 2 o 3
+            if (openanalizar <= entrenadores.size() && openanalizar > 0)
+            {
+                cout << entrenadores[openanalizar - 1] << endl;
+                entrenadores[openanalizar - 1]->mostrarPokemones();
+            }
+            break;
+        }
+        case 5:
+        {
+            // system("cls");
+            cout << "Registro  de batallas" << endl;
+            for (int i = 0; i < batallas.size(); i++)
+            {
+                cout << "Batalla " << i + 1 << endl;
+                cout << batallas[i] << endl;
+            }
+            break;
+        }
+        case 6:
+            // system("cls");
+            cout << "Fin del juego" << endl;
+            break;
+        default:
+            cout << "Opcion incorrecta, escoja otra" << endl;
+            break;
         }
     }
     return 0;
 }
 
-int ingresaPorRango(int inicio, int fin) {
-    int  valor;
+int ingresaPorRango(int inicio, int fin)
+{
+    int valor;
     bool repetir = true;
-    while (repetir) {
+    while (repetir)
+    {
         cin >> valor;
-        if (valor >= inicio && valor <= fin) {
+        if (valor >= inicio && valor <= fin)
+        {
             repetir = false;
         }
-        else {
+        else
+        {
             cout << "Valor fuera de rango" << endl;
         }
     }
@@ -988,7 +854,7 @@ Batalla *lucharEntrenadores(Entrenador *rude1, Entrenador *rude2)
 
     // ACLARACION:
     // Este va a ser un sistema de lucha uno a uno. El primero con el primero, etc-> Ya despues hacemos herencia para diferentes tipos de batalla
-    //system("cls");
+    // system("cls");
     for (int i = 0; i < 3; i++)
     {
 
@@ -1002,14 +868,25 @@ Batalla *lucharEntrenadores(Entrenador *rude1, Entrenador *rude2)
         if (ganador)
         {
             cout << "Tu pokemon " << rude1->getPokemon(i)->getNombre() << " ha ganado!!" << endl;
-            rude1->entrenar(rude1->getPokemon(i), rude2->getPokemon(i));
+            rude1->entrenar(rude1->getPokemon(i));
+            if (rude1->getPokemon(i)->verificarAumentoNivel())
+            {
+                rude1->getPokemon(i)->aumentarNivel();
+                rude1->getPokemon(i)->evolucionar();
+                rude1->aumentarNivel();
+            }
             epicGame->agregarPokGanador(rude1->getPokemon(i));
             puntajeRude1++;
         }
         else
         {
             cout << rude2->getPokemon(i)->getNombre() << "te ha vencido, y se ha vuelto más fuerte" << endl;
-            rude2->entrenar(rude2->getPokemon(i), rude1->getPokemon(i));
+            rude2->entrenar(rude2->getPokemon(i));
+            if (rude2->getPokemon(i)->verificarAumentoNivel())
+            {
+                rude2->getPokemon(i)->aumentarNivel();
+                rude2->aumentarNivel();
+            }
             epicGame->agregarPokGanador(rude2->getPokemon(i));
             puntajeRude2++;
         }
