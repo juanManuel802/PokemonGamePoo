@@ -5,6 +5,7 @@
 #include <exception>
 using namespace std;
 
+
 class Epersonalizado : public exception
 {
 private:
@@ -19,9 +20,11 @@ public:
         return msg;
     }
 };
+
 class Pokemon
 {
 protected:
+
     string nombre;
     string color;
     int ataque;
@@ -31,6 +34,8 @@ protected:
 
 public:
     Pokemon() : nombre("Pokemon"), color("amarillo"), ataque(20), vida(100), xp(0), nivel(1) {}
+
+    virtual ~Pokemon() = default;
 
     Pokemon(string nombre, string color, int ataque, int vida, int xp, int nivel)
     {
@@ -88,6 +93,7 @@ public:
             ataque += ataque * 0.1;
             aumentoPot = 10;
         }
+
         cout << "La potencia ha aumentado un " << aumentoPot << endl;
         mostrarDatos();
     }
@@ -110,14 +116,17 @@ public:
                 xp == p.xp &&
                 nivel == p.nivel);
     }
+
     friend ostream &operator<<(ostream &o, Pokemon *p);
 
     virtual void hacerGritoDeAsalto()
     {
         cout << getNombre() << ": ";
     }
+
     virtual string getAtaqueEspecial() const = 0;
 };
+
 ostream &operator<<(ostream &o, Pokemon *p)
 {
     return o << "\nNombre: " << p->getNombre() << " \n color: " << p->getColor() << "\n ataque: " << p->getAtaque() << "\n vida " << p->getVida() << " \n experiencia: " << p->getXp() << "\n nivel: " << p->getNivel() << "\n ataque especial: " << p->getAtaqueEspecial() << endl;
@@ -126,12 +135,15 @@ ostream &operator<<(ostream &o, Pokemon *p)
 class PokemonHielo : public Pokemon
 {
 private:
+
     string ataqueEspecial;
 
 public:
+
     PokemonHielo() : Pokemon(), ataqueEspecial("Congelamiento") {}
     PokemonHielo(string nombre, string color, int ataque, int vida, int xp, int nivel) : Pokemon(nombre, color, ataque, vida, xp, nivel), ataqueEspecial("Congelamiento") {}
     string getAtaqueEspecial() const override { return ataqueEspecial; }
+
     void hacerGritoDeAsalto() override
     {
         Pokemon::hacerGritoDeAsalto();
@@ -142,10 +154,12 @@ public:
 class PokemonVeneno : public Pokemon
 {
 private:
+
     string ataqueEspecial;
     int toxicidad;
 
 public:
+
     PokemonVeneno() : Pokemon(), ataqueEspecial("Intoxicacion"), toxicidad(3) {}
     PokemonVeneno(string nombre, string color, int ataque, int vida, int xp, int nivel) : Pokemon(nombre, color, ataque, vida, xp, nivel), ataqueEspecial("Intoxicacion"), toxicidad(3) {}
     string getAtaqueEspecial() const override { return ataqueEspecial; }
@@ -164,19 +178,23 @@ public:
 class PokemonAcero : public Pokemon
 {
 private:
+
     string ataqueEspecial;
     int escudoAcero;
 
 public:
+
     PokemonAcero() : Pokemon(), ataqueEspecial("Escudo de acero"), escudoAcero(100) {}
     PokemonAcero(string nombre, string color, int ataque, int vida, int xp, int nivel) : Pokemon(nombre, color, ataque, vida, xp, nivel), ataqueEspecial("Escudo de Acero"), escudoAcero(100) {}
     string getAtaqueEspecial() const override { return ataqueEspecial; }
     int getEscudoAcero() const { return escudoAcero; }
+
     void hacerGritoDeAsalto() override
     {
         Pokemon::hacerGritoDeAsalto();
         cout << "TSK TSK escudo activado!! " << endl;
     }
+
     void desgastarEscudo(int desgaste)
     {
         escudoAcero -= desgaste;
@@ -186,13 +204,22 @@ public:
 class Entrenador
 {
 private:
+
     vector<Pokemon *> misPokemones; // aunque debe ser 3, eso se maneja en la excepción
     string nombre;
     int nivel;
 
 public:
+
     Entrenador() : nombre(""), nivel(1) {}
     Entrenador(const string &nombre, const vector<Pokemon *> &pokemones) : nombre(nombre), misPokemones(pokemones), nivel(1) {}
+
+    ~Entrenador() {
+        for (Pokemon* p : misPokemones) {
+            delete p;
+        }
+    }
+
     string getNombre() const { return nombre; }
     int getNivel() const { return nivel; }
     void setNombre(string nombre) { this->nombre = nombre; }
@@ -243,6 +270,7 @@ public:
 
     friend ostream &operator<<(ostream &o, Entrenador *c);
 };
+
 ostream &operator<<(ostream &o, Entrenador *c)
 {
     //    return o << "\nNombre: " << p->getNombre() << " \n color: " << p->getColor() << "\n ataque: " << p->getAtaque() << "\n vida " << p->getVida() << " \n experiencia: " << p->getXp() << "\n nivel: "
@@ -250,6 +278,7 @@ ostream &operator<<(ostream &o, Entrenador *c)
     return o << "Entrenador: " << c->getNombre() << endl
              << "Nivel:  " << c->getNivel() << endl;
 }
+
 // system("cls");
 class Batalla
 {
@@ -261,6 +290,7 @@ private:
     vector<int> registroRondas;
 
 public:
+
     Batalla() : registroDaño(0) {}
     Batalla(string ent1, string ent2)
     {
@@ -268,6 +298,7 @@ public:
         contrincantes[1] = ent2;
         registroDaño = 0;
     }
+
     int getRegistroDaño() const { return registroDaño; }
     string getGanador() const { return ganador; }
     string getContrincante(int i) const { return contrincantes[i]; }
@@ -287,9 +318,10 @@ public:
     }
 
 //aqui empieza lo bueno la lucha
-    void luchar(Pokemon *miPok, Pokemon *oponente, bool &ganador)
-    {
-        int vidaOponente, vidaMiPok, ataqueMiPok, ataqueOponente, nivelMipok, nivelOponente, xpMiPok, xpOponente, ronda = 1, atq = 0, atqO = 0;
+
+    void luchar(Pokemon *miPok, Pokemon *oponente, bool &ganador){
+
+        int vidaOponente,vidaOponenteantesX=0,vidaOponenteantesP=0, vidaMiPok, ataqueMiPok, ataqueOponente, nivelMipok, nivelOponente, xpMiPok, xpOponente, ronda = 1, atq = 0, atqO = 0;
         char sig;
         vidaOponente = oponente->getVida();
         vidaMiPok = miPok->getVida();
@@ -297,6 +329,9 @@ public:
         ataqueOponente = oponente->getAtaque();
         nivelMipok = miPok->getNivel();
         nivelOponente = oponente->getNivel();
+
+
+
         cout << "\n**************************************************************\n";
         cout << "\n          QUE COMIENCE LA PELEA!          \n ";
         cout << miPok;
@@ -304,9 +339,9 @@ public:
         cout << oponente;
         cout << "\n**************************************************************\n";
 
-//hasta que algun pokemon enemigo o amigo muera, sucede este ciclo: cada ciclo es una RONDA
-        while (vidaOponente > 0 && vidaMiPok > 0)
-        {
+        //hasta que algun pokemon enemigo o amigo muera, sucede este ciclo: cada ciclo es una RONDA
+        while (vidaOponente > 0 && vidaMiPok > 0){
+
             //inicializamos semilla para numeros  pseudo-aleatorios
             srand(static_cast<unsigned>(time(0)));
 
@@ -315,25 +350,30 @@ public:
 
             //variables para verificar si hay un pokemon congelado o no
             //e inciizalicacion de otras variables que se usarán
-            bool congeladoverop = false;
+             bool congeladoverop = false;
             bool congeladovermi = false;
             int restOp, restMi;
-            int  vidaMiPokantes=0,vidaOponenteantesX=0,vidaOponenteantesP=0, dañoTotalOponente = 0, dañoTotalMiPok = 0; // dañoTotal para extraer la informacion deel daño que hizo el pokemon luego del ataque cualquiera que sea
+            int  vidaMiPokantes=0, dañoTotalOponente = 0, dañoTotalMiPok = 0; // dañoTotal para extraer la informacion deel daño que hizo el pokemon luego del ataque cualquiera que sea
             char sig, tipoAtaque;
             dañoTotalOponente = ataqueOponente;
             dañoTotalMiPok = ataqueMiPok;
 
 
-            cout << "Presiona (x) para lanzar un ataque normal o (p) para un ataque especial." << endl;
-            cout << "Solo tienes una oportunidad para lanzar el ataque especial" << endl;
+
+            cout << "                              Presiona (x) para lanzar un ataque normal o (p) para un ataque especial." << endl;
+            cout << "                                        Solo tienes una oportunidad para lanzar el ataque especial" << endl;
             cout << "\n\n{,.-}{,.-}{,.-}{,.-}{,.-}{,.-}{,.-}{,.-}{,.-}{,.-}{,.-} RONDA " << ronda << " {,.-}{,.-}{,.-}{,.-}{,.-}{,.-}{,.-}{,.-}{,.-}{,.-}{,.-}" << endl; // Inicia ronda
             cout << endl;
 
             // esto muestra la variable aleatoria generada en cada ronda
             cout << "variable aletoria : " << variableAleatoria;
+
+            //si variable aleatoria es 1, indica que el enemigo usará su ataque especial!!
             if(variableAleatoria==1){
+
                 cout<<" Preparate... "<<endl;
             }else{
+
                 cout<<endl;
             }
 
@@ -341,8 +381,6 @@ public:
             if (atq == 0 || atq > 1)
 
             { // atq>1 para confirmar si ya se usó el especial y si es asi, mandar solo normales ahora
-
-
 
                 vidaMiPok -= dañoTotalOponente;
 
@@ -395,7 +433,6 @@ public:
                 // si la variable es 1, usa su ataque especial, aqui solo muestra al usuario que la usó
                 //atqO es la variable que nos indica si ya se usó o no el ataque especial del enemigo (0= no se ha usado)(1= si)
                 //si variableAleatoria=1, indica que el ataque especial del enemigo esta en marcha..
-
                 if (variableAleatoria == 1 && atqO == 0)
                 {
                     //vidaMiPokantes es una variable que guarda la vida de mi pokemon...  (una copia)
@@ -462,91 +499,153 @@ public:
             {
                 try
                 {
+                    //antes de nosotros atacar ya sea con ataque normal o especial... si estamos intoxicados el veneno actua...
                     if (variableAleatoria == 1 && atqO == 1 && oponente->getAtaqueEspecial() == "Intoxicacion")
                     {
                         //variableAleatoria=2;
 
                         cout << miPok->getNombre() << " esta intoxicado y el veneno empeora! NOOOO " << endl;
 
+                        //muestra graficamente la vida de nuestro pokemon menos el nivel del veneno actualmente...
                         cout << vidaMiPok << " - " << dynamic_cast<PokemonVeneno *>(oponente)->getToxicidad() << " = ";
-                        // vidaOponente -= dañoTotalMiPok;
+
+
+                        //aqui hace ya internamente lo que se mostró graficamente anteriormente...
                         vidaMiPok -= dynamic_cast<PokemonVeneno *>(oponente)->getToxicidad();
+
+                        //aqui imprime la vida de nuestro pokemon luego de recibir el veneno actual
                         cout << vidaMiPok << endl;
+
+                        //registramos el daño..
                         setRegistroDaño(getRegistroDaño() + ataqueMiPok + dynamic_cast<PokemonVeneno *>(oponente)->getToxicidad());
+
+                        //finalmente el veneno aumenta en 3 para la siguiente ronda!!
                         dynamic_cast<PokemonVeneno *>(oponente)->aumentarToxicidad(3);
+
                     }
+
                     // Verifica si el pokemon sigue vivo, porque pudo haber muerto por intoxicacion
-                    // IMPORTANTE
-                    // Antes estaba despues de que se le solicitara al usuario atacar, y si moria mor intoxicacion no atacaba,
-                    // asi que no tenia sentido
                     if (vidaMiPok <= 0)
                     {
                         vidaMiPok = 0;
                         ganador = false; // Establece ganador
                         break;
                     }
+
                     else
+                    //ahora si atacamos, y elegimos entre ataque normal o especial (x ó p)
                     {
-                        cout << "Ataca!!" << endl;
-                        cin >> tipoAtaque;
+                        //posible solucion a un bug
+                        if(vidaOponenteantesX != 0){
+
+                            variableAleatoria=1;
+
+                        }
+
+
+
+
+                        if( !(oponente->getAtaqueEspecial()=="Congelamiento" &&  atqO==1) ){
+                            cout << "Ataca!!" << endl;
+                            cin >> tipoAtaque;
+                        }
+
+
+
                     }
+                        //si el usuario ataca normal y la variablealeatoria que nos indica que el ataque especial del enemigo esta en marcha, entramos a este if...
                     if (tipoAtaque == 'x' && variableAleatoria == 1)
                     {
+
                          //variableAleatoria=2;
+
+                         //aca empieza a preguntar si es congelamiento o escudo de acero...
+                         //recordar que atqO es una variable que nos indica que el ataque especial enemigo ya fue usado o no...
                         if (oponente->getAtaqueEspecial() == "Congelamiento" && atqO == 1)
                         {
+                            //no hará daño asi que hacemos esta igualacion
                             dañoTotalMiPok = 0;
+
                             cout << miPok->getNombre() << " esta congelado!!!! " << endl;
+
+                            //atqO++ ya que este ataque especial es único.. no como los otros 2
                             atqO++;
+
+                            //el booleano congeladovermi lo vuelve true para usarlo mas adelante
                             congeladovermi = true;
+
                         }
+
+                        //si no es congelamiento entra al ataque especial escudo de acero...
+                        //pregunta si la via del escudo de acero del enemigo es mayor a cero y si atqO es 1...
                         else if (oponente->getAtaqueEspecial() == "Escudo de Acero" && (dynamic_cast<PokemonAcero *>(oponente)->getEscudoAcero() > 0) && atqO == 1)
                         {
 
+                            //indica la vida del escudo del enemigo...
                             cout<<"Escudo actual de "<<oponente->getNombre()<<" : "<< dynamic_cast<PokemonAcero *>(oponente)->getEscudoAcero() <<endl;
 
+                            //como es ataque normal, desgasta el escudo solamente con el 20% del daño normal del enemigo (EJ: si es 100, le quita 20)
                             dynamic_cast<PokemonAcero *>(oponente)->desgastarEscudo(ataqueMiPok * 0.2);
 
-                            //variable que guarda la vida del oponente ANTES de recibir el daño reducido EN EL IF DE USAR X
+                            //variable que guarda la vida del oponente ANTES de recibir el daño reducido 20% (recordar, que es daño normal en este caso)
                             vidaOponenteantesX = vidaOponente;
 
-                            cout <<"VIDA OPONENTE ANTES DE RECIBIR EL ATAQUE NORMAL DE MI POKEMON"<<vidaOponente<<endl;
+                            //como el ataque especial es escudo de acero, le quitamos el daño normal menos un 20% ...
                             vidaOponente -= (ataqueMiPok - (ataqueMiPok * 0.2));
-                            cout <<"VIDA OPONENTE DESPUES DE RECIBIR EL ATAQUE NORMAL DE MI POKEMON"<<vidaOponente<<endl;
 
-                            setRegistroDaño(getRegistroDaño() + ataqueMiPok - ataqueMiPok * 0.2);
+                            //registramos el daño hecho en total
+                            setRegistroDaño(getRegistroDaño() + (ataqueMiPok - ataqueMiPok * 0.2));
 
                         }
-                        cout << "\n**************************************************************\n";
+
+                       // cout << "\n**************************************************************\n";
+
+                        //la variable booleana congeladovermi verifica si el ataque espcial era congelado, y si es asi entra a este if
                         if (congeladovermi)
                         {
+                            //imprime este cout y nada mas...
                             cout << miPok->getNombre() << " esta descongelandose... " << endl;
+
                         }
                         else
                         {
-                            if(vidaOponenteantesX>0){
-                                cout<<"no se cumple no me va a pegar de nuevo"<<endl;
-                            }else{
-                            cout<<"me volvio a bajar vida"<<endl;
-                            vidaOponente -= ataqueMiPok;
-                            //agregar validador para ver si gané o no...
 
+                            //pregunta si vidaOponenteantesX es mayor a cero, si es cierto quiere decir que el ataque especial es escudo de Acero
+                            if(vidaOponenteantesX != 0){
+
+
+                            }else{
+
+                            //si no es congelamiento ni escudo de acero , es Intoxicacion y en Intoxicacion el ataque es normal
+                            vidaOponente -= ataqueMiPok;
+
+                            //registramos el daño hecho...
                             setRegistroDaño(getRegistroDaño() + ataqueMiPok);
+
+
                             cond = false;
                         }}
                     }
+
+
+                    //si el ataque especial del enemigo no esta en uso, pegamos normal
                     else if (tipoAtaque == 'x')
                     {
-                        cout << "vida oponente antes de atacarlo: " << vidaOponente << endl;
+
                         vidaOponente -= ataqueMiPok;
+
+                        //registramos daño..
                         setRegistroDaño(getRegistroDaño() + ataqueMiPok);
+
                         cond = false;
                     }
 
-                    // ataque especial de nuestro pokemon
+
+                    //si usamos el ataque especial de nuestro pokemon Y el ataque especial del enemigo esta en uso entramos a este if
                     else if (atq == 0 && tipoAtaque == 'p' && variableAleatoria == 1)
                     {
-                        variableAleatoria = 2;
+
+                        //variableAleatoria = 2;
                         atq++;
 
                         if (oponente->getAtaqueEspecial() == "Congelamiento" && atqO == 1)
@@ -563,31 +662,39 @@ public:
 
                             //variable que guarda la vida del oponente ANTES de recibir el daño reducido EN EL IF DE USAR P
                             vidaOponenteantesP = vidaOponente;
+
                             //este es el daño extra por usar ataque especial
                             dañoTotalMiPok = ataqueMiPok + ataqueMiPok * .4;
+
                             //aqui esta el proceso para mitigar un 20% del daño de nuestro pokemon hacia el enemigo (ya que este ultimo usó su ataque especial )
                             dynamic_cast<PokemonAcero *>(oponente)->desgastarEscudo((ataqueMiPok + ataqueMiPok * .4) * 0.2);
 
-                            //este es pa verla antes de recibir
-                             cout <<"VIDA OPONENTE ANTES DE RECIBIR EL ATAQUE NORMAL DE MI POKEMON"<<vidaOponente<<endl;
-
                             vidaOponente -= ((ataqueMiPok + ataqueMiPok * .4) - ((ataqueMiPok + ataqueMiPok * .4) * 0.2));
 
-                            //esto es para ver la vida del oponente apenas recibe ataque... nomas pa revisar
-                            cout <<"VIDA OPONENTE APENAS APENAS RECIBE EL ATAQUE NORMAL DE MI POKEMON"<<vidaOponente<<endl;
-
+                            //registro del daño hecho...
                             setRegistroDaño(getRegistroDaño() + (ataqueMiPok + ataqueMiPok * .4) - ((ataqueMiPok + ataqueMiPok * .4) * 0.2));
 
                         }
+
+                        //si el pokemon esta congelado, no mostrará que atacó sino que esta descongelandose...
                         if (congeladovermi)
                         {
                             cout << miPok->getNombre() << " esta descongelandose... " << endl;
                         }
+
+                        //si no, va a entrar a este else...
                         else
                         {
+                            //vidaOponenteantesP es una variable que nos ayuda a diferenciar si el ataque especial del enemigo era escudo de acero...
+                            //ya que esta variable llega a ser mayor a cero solamente si entra al if de escudo de acero...
                             if(vidaOponenteantesP>0){
-                                cout<<"hola no se cumplio jiji"<<endl;
-                            }else{
+
+                                cout<<"este cout sirve para verificar que efectivamente, no atacó de nuevo si es escudo de acero el ataque especial del enemigo"<<endl;
+
+                            }
+
+                            else
+                            {
                             dañoTotalMiPok = ataqueMiPok + ataqueMiPok * .4;
                             vidaOponente -= dañoTotalMiPok;
                             setRegistroDaño(getRegistroDaño() + dañoTotalMiPok);
@@ -633,6 +740,7 @@ public:
                         setRegistroDaño(getRegistroDaño() + dañoTotalMiPok);
                         atq++;
                     }
+
                     else if (atq != 0 && tipoAtaque == 'p')
                     {
                         throw Epersonalizado("Error al lanzar el ataque", "Ataque especial ya usado");
@@ -665,10 +773,15 @@ public:
                 }
                 else if (vidaOponenteantesP==0)
                 {
+                    if((oponente->getAtaqueEspecial()=="Congelamiento" &&  atqO==2)){
+                        cout<<endl;
+                    }else{
+
                 cout << "\n**************************************************************\n";
                 cout << miPok->getNombre() << " ha atacado " << endl;
                 cout << oponente->getNombre() << ": Vida: " << vidaOponente + dañoTotalMiPok << " - " << dañoTotalMiPok << " ->  " << vidaOponente << endl;
                 cout << "\n**************************************************************\n\n";
+                    }
                 }
             }
             else
@@ -851,7 +964,7 @@ int main()
                 {
                     string x;
                     cerr << e.what() << endl;
-                    cout << "presu¿iona una tecla y enter para aceptar" << endl;
+                    cout << "presiona una tecla y enter para aceptar" << endl;
                     cin >> x;
                     break;
                 }
@@ -932,7 +1045,16 @@ int main()
             break;
         }
     }
+
+    for(int i=0;i<entrenadores.size();i++){
+        delete entrenadores[i];
+        for(int j=0;j<3;j++){
+            delete entrenadores[i]->getPokemon(j);
+        }
+    }
+
     return 0;
+
 }
 
 int ingresaPorRango(int inicio, int fin)
