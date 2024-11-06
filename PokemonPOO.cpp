@@ -16,8 +16,8 @@ public:
     Epersonalizado(const char *mensaje, const char *cau) : msg(mensaje), causa(cau) {}
     const char *what() const noexcept override
     {
-        cerr << "causa : " << causa << endl;
-        return msg;
+        cerr << "Error: " << msg << endl;
+        return causa;
     }
 };
 
@@ -895,7 +895,7 @@ int main()
         }
         case 2:
         {
-            int op, i = 0;
+             int op, i = 0;
             string condPok = "si";
             for (int i = 0; i < entrenadores.size(); i++)
             {
@@ -903,7 +903,7 @@ int main()
             }
 
             cout << "Elige un entrenador para añadir pokemones" << endl;
-            cin >> op;
+            op = ingresaPorRango(1, entrenadores.size());
             while (condPok == "si" || condPok == "Si")
             {
                 try
@@ -920,7 +920,7 @@ int main()
                     cout << "1. Hielo" << endl;
                     cout << "2. Veneno" << endl;
                     cout << "3. Acero" << endl;
-                    cin >> tipoPoke;
+                    tipoPoke = ingresaPorRango(1, 3);//validador y lo de excepciones cuando se digita un dato incorrecto
 
                     Pokemon *poki; // Pienso
                     if (tipoPoke == 1)
@@ -946,12 +946,12 @@ int main()
 
                     cout << "Vida de " << poki->getNombre() << ":" << endl;
                     cout << "Desde 70 a 100" << endl;
-                    vida = ingresaPorRango(70, 100);
+                    vida = ingresaPorRango(70, 100); //funcion para validar y hacer la excepcion si se digita fuera de rango o una letra
                     poki->setVida(vida);
 
                     cout << "Potencia de ataque de " << poki->getNombre() << ":" << endl;
                     cout << "Desde 10 a 30" << endl;
-                    potAtaque = ingresaPorRango(10, 30);
+                    potAtaque = ingresaPorRango(10, 30);//lo mismo pero con otros parametros
                     poki->setPotenciaDeAtaque(potAtaque);
 
                     entrenadores[op - 1]->agregarpokemon(poki);
@@ -973,7 +973,9 @@ int main()
         }
         case 3:
         {
+              bool condm=false; //booleano para manejar el segundo do-while
             // system("cls");
+            //Excepcion que lanza error si el numero digitado no esta en la lista y si el entrenador no tiene 3 pokemones
             do
             {
                 Batalla *game = new Batalla;
@@ -984,31 +986,53 @@ int main()
                     cout << "Pokemones: " << endl;
                     entrenadores[i]->mostrarPokemones();
                 }
-                cout << "Selecciona tu entrenador " << endl;
-                cin >> pro1;
-                cout << "Selecciona tu adversario" << endl;
-                cin >> pro2;
+                try{
+                    do{ // do-while dentro del try para ejecutar el bloque try-catch
+                        cout << "Selecciona tu entrenador " << endl;
+                        cin >> pro1;
+                        cout << "Selecciona tu adversario" << endl;
+                        cin >> pro2;
+                        //pregunta si las opciones estan dentro del tamaño del vector entrenadores
+                        if(pro1 >= 1 && pro1 <= entrenadores.size() && pro2 >= 1 && pro2 <= entrenadores.size()){
+                            try{
+                                //pregunta si los entrenadores tienen los 3 pokemons, si no los tienen les manda el error
+                                if(entrenadores[pro1-1]->getCantidadPokemones() < 3 || entrenadores[pro2-1]->getCantidadPokemones() < 3){
+                                    throw Epersonalizado("Error al iniciar la batalla", "Este entrenador no tiene suficientes pokemones");
+                                }else{
+                                    if (pro1 != pro2)
+                                    {
+                                        game = lucharEntrenadores(entrenadores[pro1 - 1], entrenadores[pro2 - 1]);
 
-                if (pro1 != pro2)
-                {
-                    game = lucharEntrenadores(entrenadores[pro1 - 1], entrenadores[pro2 - 1]);
-
-                    batallas.push_back(game);
+                                        batallas.push_back(game);
+                                    }
+                                    else
+                                    {
+                                        cout << "Elegiste al mismo, ahora no haces nada :(" << endl;
+                                    }
+                                    condm=true; //cambia el estado del controlador del do-while cuando no hay errores, para poder salir del ciclo
+                                    cout << "Quieres volvera jugar? " << endl;
+                                    cin >> cond;
+                                }
+                            }catch(Epersonalizado &e){
+                                    cerr<<e.what()<<endl;
+                                    cout<<"Elige otro entrenador"<<endl;
+                                }
+                        }else{
+                            throw Epersonalizado("Error al iniciar la batalla","No hay entrenadores con esa opcion en la lista");
+                        }
+                    }while(condm==false);
+                }catch(Epersonalizado &e){
+                    cerr<<e.what()<<endl;
+                    cout<<"Elige una opcion dentro de la lista"<<endl;
                 }
-                else
-                {
-                    cout << "Elegiste al mismo, ahora no haces nada :(" << endl;
-                }
-                cout << "Quieres volvera jugar? " << endl;
-                cin >> cond;
-                // Agregar excepcion aquí por si el usuario ingresa un valor que no sea si o no
             } while (cond == "si");
+            
             break;
         }
         case 4:
         {
 
-            cout << "Que entrenador desea analizar? " << endl;
+           cout << "Que entrenador desea analizar? " << endl;
             cout << "Entrenadores disponibles: " << endl;
 
             for (int i = 0; i < entrenadores.size(); i++)
@@ -1016,8 +1040,8 @@ int main()
                 cout << i + 1 << ") " << entrenadores[i]->getNombre() << endl;
             }
             int openanalizar;
-            cin >> openanalizar;
-            // excepcion que suelte error si escoge algo distinto a 1 2 o 3
+            //validador y lo de excepcion cuando se ingresa un numero que no esta en el rango del vector entrenadores
+            openanalizar = ingresaPorRango(1, entrenadores.size());
             if (openanalizar <= entrenadores.size() && openanalizar > 0)
             {
                 cout << entrenadores[openanalizar - 1] << endl;
@@ -1063,18 +1087,37 @@ int ingresaPorRango(int inicio, int fin)
     bool repetir = true;
     while (repetir)
     {
-        cin >> valor;
-        if (valor >= inicio && valor <= fin)
+        try{
+            cin >> valor;
+            //cin.fail es una funcion de la biblioteca iostream que permite detectar un fallo en la entrada de un cin
+            //devuelve un valor booleano
+            if(cin.fail()){
+                cin.clear();
+                //cin.clear limpia el estado de error del cin para poder hacer otras lecturas cin sin problemas, es como subir una historia a insta pero mal y borrarla para subir otra
+                cin.ignore();
+                //cin.ignore descarta los la entrada incorrecta para que no interfiera en otro cin que hagamos, es como limpiar una caja para que no ensucie lo que vamos a meter
+                throw invalid_argument("Error: No se introdujo un numero entero valido.");
+                //parte de la libreria exception que permite lanzar un error cuando se digita una entrada invalida
+        }
+        else if (valor >= inicio && valor <= fin)
         {
             repetir = false;
         }
         else
         {
-            cout << "Valor fuera de rango" << endl;
+            throw Epersonalizado("Valor fuera de rango", "Digito fuera del rango establecido");
+        }
+        }catch(Epersonalizado &e){
+            cerr<<e.what()<<endl;
+            cout<<"Ingrese un valor dentro de rango"<<endl;;
+        }catch(invalid_argument &e){
+            cerr<<e.what()<<endl;
+            cout<<"Digite un valor entero"<<endl;
         }
     }
     return valor;
 }
+
 
 Batalla *lucharEntrenadores(Entrenador *rude1, Entrenador *rude2)
 {
